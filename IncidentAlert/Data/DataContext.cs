@@ -33,8 +33,6 @@ namespace IncidentAlert.Data
                 .HasForeignKey(ic => ic.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-
-
         }
     }
 }

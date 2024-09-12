@@ -1,6 +1,5 @@
 using IncidentAlert.Data;
-using IncidentAlert.Models;
-using IncidentAlert.Models.Dto;
+using IncidentAlert.Middleware;
 using IncidentAlert.Repositories;
 using IncidentAlert.Repositories.Implementation;
 using IncidentAlert.Services;
@@ -25,10 +24,10 @@ builder.Services.AddDbContext<DataContext>(
     o => o.UseNpgsql(builder.Configuration.GetConnectionString("IncidentAlertDB")));
 
 // Repository
-builder.Services.AddScoped(typeof(IRepository<,>), typeof(Repository<>));
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 // Service
-builder.Services.AddScoped<IService<CategoryDto, Category>, CategoryService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 
 // Logging
@@ -45,10 +44,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+// Exception middleware
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+//app.UseAuthorization();
 
 app.MapControllers();
 

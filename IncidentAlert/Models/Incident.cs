@@ -10,6 +10,9 @@ namespace IncidentAlert.Models
         [Required]
         public string Text { get; set; } = string.Empty;
 
+        [Required]
+        public DateTime DateTime { get; set; }
+
         [ForeignKey("LocationId")]
         public Location Location { get; set; } = null!;
 

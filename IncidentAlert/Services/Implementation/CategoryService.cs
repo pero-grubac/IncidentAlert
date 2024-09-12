@@ -2,16 +2,16 @@
 using IncidentAlert.Exceptions;
 using IncidentAlert.Models;
 using IncidentAlert.Models.Dto;
-using IncidentAlert.Repositories.Implementation;
+using IncidentAlert.Repositories;
 using IncidentAlert.Util;
 using System.Linq.Expressions;
 
 namespace IncidentAlert.Services.Implementation
 {
-    public class CategoryService(IMapper mapper, Repository<Category> repository) : IService<CategoryDto, Category>
+    public class CategoryService(IMapper mapper, ICategoryRepository categoryRepository) : ICategoryService
     {
         private readonly IMapper _mapper = mapper;
-        private readonly Repository<Category> _repository = repository;
+        private readonly ICategoryRepository _repository = categoryRepository;
         public async Task<CategoryDto> AddAsync(CategoryDto entity)
         {
             bool exists = await _repository.ExistsAsync(c => c.Name == entity.Name);
@@ -64,5 +64,7 @@ namespace IncidentAlert.Services.Implementation
 
             return _mapper.Map<Category, CategoryDto>(updatedCategory);
         }
+
+
     }
 }

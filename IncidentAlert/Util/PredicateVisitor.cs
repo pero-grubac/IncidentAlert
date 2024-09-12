@@ -8,17 +8,14 @@ namespace IncidentAlert.Util
 
         public override Expression Visit(Expression node)
         {
-            // Perform conversion logic here, e.g., replace parameters
-            // This is a simplified example, and may need more detailed handling
-            if (node is MemberExpression memberExpr)
-            {
-                // Example: replace parameter from TSource to TTarget
-                // Implement additional logic based on your needs
-                var newExpr = Expression.Property(_parameter, memberExpr.Member.Name);
-                return newExpr;
-            }
-
+            // Customize this method to handle specific expressions
             return base.Visit(node);
+        }
+
+        public Expression<Func<TTarget, bool>> Visit(Expression<Func<TSource, bool>> source)
+        {
+            var body = Visit(source.Body);
+            return Expression.Lambda<Func<TTarget, bool>>(body, _parameter);
         }
     }
 }

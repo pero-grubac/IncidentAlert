@@ -21,6 +21,7 @@ namespace IncidentAlert.Middleware
 
         private async Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
+
             ErrorDetails details = ex switch
             {
                 EntityDoesNotExistException => new ErrorDetails
@@ -55,5 +56,6 @@ namespace IncidentAlert.Middleware
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsync(details.ToString());
         }
+
     }
 }
