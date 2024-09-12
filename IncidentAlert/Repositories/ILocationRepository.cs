@@ -5,12 +5,12 @@ namespace IncidentAlert.Repositories
 {
     public interface ILocationRepository
     {
-        Task<IEnumerable<Location>> GetAllAsync();
-        Task<Location?> GetByIdAsync(int id);
-        Task<Location> AddAsync(Location location);
-        Task<Location> UpdateAsync(Location location);
-        Task DeleteAsync(int id);
-        Task<bool> ExistsAsync(Expression<Func<Location, bool>> predicate);
-        Task<IEnumerable<Location>> FindAsync(Expression<Func<Location, bool>> predicate);
+        Task<IEnumerable<Location>> GetAll();
+        Task<Location?> GetById(int id);
+        Task<Location> Add(Location location);
+        Task<Location> Update(Location location);
+        Task Delete(Location entity);
+        Task<bool> Exists(Expression<Func<Location, bool>> predicate);
+        Task<IEnumerable<Location>> Find(Expression<Func<Location, bool>> predicate);
     }
 }

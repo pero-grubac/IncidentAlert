@@ -1,9 +1,8 @@
 ﻿namespace IncidentAlert.Exceptions
 {
-    public class EntityCannotBeDeletedException : Exception
+    public class EntityCannotBeDeletedException : CustomException
     {
-        public EntityCannotBeDeletedException() { }
         public EntityCannotBeDeletedException(string message) : base(message) { }
-        public EntityCannotBeDeletedException(string message, Microsoft.EntityFrameworkCore.DbUpdateException ex) : base(message) { }
+        public EntityCannotBeDeletedException(string message, Exception ex) : base(message) { }
     }
 }

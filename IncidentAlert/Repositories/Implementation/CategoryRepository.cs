@@ -19,13 +19,14 @@ namespace IncidentAlert.Repositories.Implementation
 
         public async Task DeleteAsync(int id)
         {
+            // TODO prebaci u servis, a da je repo samo za perzistenciju
             var entity = await _dataContext.Categories.FirstOrDefaultAsync(x => x.Id == id) ?? throw new EntityDoesNotExistException($"Entity with ID {id} does not exist.");
             try
             {
                 _dataContext.Categories.Remove(entity);
                 await _dataContext.SaveChangesAsync();
             }
-            catch (DbUpdateException ex)
+            catch (Exception ex)
             {
                 throw new EntityCannotBeDeletedException($"Entity with ID {id} cannot be deleted. {ex.Message}", ex);
             }

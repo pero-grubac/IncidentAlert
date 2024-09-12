@@ -24,15 +24,15 @@ namespace IncidentAlert.Middleware
 
             ErrorDetails details = ex switch
             {
-                EntityDoesNotExistException => new ErrorDetails
+                EntityDoesNotExistException custom => new ErrorDetails
                 {
                     Code = (int)HttpStatusCode.NotFound, // 404 Not Found
-                    Message = ex.Message
+                    Message = custom.GetBaseMessage(),
                 },
-                EntityCannotBeDeletedException => new ErrorDetails
+                EntityCannotBeDeletedException custom => new ErrorDetails
                 {
                     Code = (int)HttpStatusCode.Conflict,  // 409 Conflict
-                    Message = ex.Message
+                    Message = custom.GetBaseMessage(),
                 },
                 ArgumentException => new ErrorDetails
                 {
