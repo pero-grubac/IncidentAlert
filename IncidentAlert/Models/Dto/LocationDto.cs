@@ -1,8 +1,7 @@
 ﻿namespace IncidentAlert.Models.Dto
 {
-    public class LocationDto
+    public class LocationDto : BaseDto<int>
     {
-        public int Id { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public string Name { get; set; } = string.Empty;

@@ -1,8 +1,10 @@
-﻿using System.Linq.Expressions;
+﻿using IncidentAlert.Models;
+using IncidentAlert.Models.Dto;
+using System.Linq.Expressions;
 
 namespace IncidentAlert.Services
 {
-    public interface IService<TDto, T>
+    public interface IService<TDto, T> where TDto : BaseDto<int> where T : BaseEntity<int>
     {
         Task<IEnumerable<TDto>> GetAllAsync();
         Task<TDto?> GetAsync(int id);
