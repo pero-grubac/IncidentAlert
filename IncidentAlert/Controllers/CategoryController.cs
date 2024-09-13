@@ -8,7 +8,7 @@ namespace IncidentAlert.Controllers
     [Route("api/[controller]")]
     public class CategoryController(ICategoryService categoryService) : ControllerBase
     {
-        private readonly ICategoryService _categoryService = categoryService;
+        private readonly ICategoryService _service = categoryService;
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<CategoryDto>))]
@@ -17,7 +17,7 @@ namespace IncidentAlert.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var categories = await _categoryService.GetAll();
+            var categories = await _service.GetAll();
 
             return Ok(categories);
         }
@@ -30,7 +30,7 @@ namespace IncidentAlert.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var category = await _categoryService.GetById(id);
+            var category = await _service.GetById(id);
             return Ok(category);
 
         }
@@ -38,12 +38,12 @@ namespace IncidentAlert.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> Create([FromBody] CategoryDto newCategory)
+        public async Task<IActionResult> Add([FromBody] CategoryDto newCategory)
         {
             if (newCategory == null || !ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var category = await _categoryService.Add(newCategory);
+            var category = await _service.Add(newCategory);
 
             return Ok(category);
 
@@ -58,10 +58,7 @@ namespace IncidentAlert.Controllers
             if (newCategory == null || !ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (id != newCategory.Id)
-                return BadRequest(ModelState);
-
-            var category = await _categoryService.Update(id, newCategory);
+            var category = await _service.Update(id, newCategory);
 
             return Ok(category);
         }
@@ -74,7 +71,7 @@ namespace IncidentAlert.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _categoryService.Delete(id);
+            await _service.Delete(id);
 
             return Ok("Succesfully deleted");
         }
