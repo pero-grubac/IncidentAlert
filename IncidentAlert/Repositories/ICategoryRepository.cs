@@ -5,12 +5,12 @@ namespace IncidentAlert.Repositories
 {
     public interface ICategoryRepository
     {
-        Task<IEnumerable<Category>> GetAllAsync();
-        Task<Category?> GetByIdAsync(int id);
-        Task<Category> AddAsync(Category category);
-        Task<Category> UpdateAsync(Category category);
-        Task DeleteAsync(int id);
-        Task<bool> ExistsAsync(Expression<Func<Category, bool>> predicate);
-        Task<IEnumerable<Category>> FindAsync(Expression<Func<Category, bool>> predicate);
+        Task<IEnumerable<Category>> GetAll();
+        Task<Category?> GetById(int id);
+        Task<Category> Add(Category category);
+        Task<Category> Update(Category category);
+        Task Delete(int id);
+        Task<bool> Exists(Expression<Func<Category, bool>> predicate);
+        Task<IEnumerable<Category>> Find(Expression<Func<Category, bool>> predicate);
     }
 }

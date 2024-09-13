@@ -1,4 +1,5 @@
-﻿using IncidentAlert.Services;
+﻿using IncidentAlert.Models.Dto;
+using IncidentAlert.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IncidentAlert.Controllers
@@ -8,5 +9,17 @@ namespace IncidentAlert.Controllers
     public class LocationController(ILocationService locationService) : ControllerBase
     {
         private readonly ILocationService _service = locationService;
+
+        [HttpGet]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<LocationDto>))]
+        public async Task<IActionResult> GetAll()
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var locations = await _service.GetAll();
+
+            return Ok(locations);
+        }
     }
 }

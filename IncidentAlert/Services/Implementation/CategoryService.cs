@@ -14,31 +14,31 @@ namespace IncidentAlert.Services.Implementation
         private readonly ICategoryRepository _repository = categoryRepository;
         public async Task<CategoryDto> AddAsync(CategoryDto entity)
         {
-            bool exists = await _repository.ExistsAsync(c => c.Name == entity.Name);
+            bool exists = await _repository.Exists(c => c.Name == entity.Name);
             if (exists)
                 throw new InvalidOperationException("Category already exists");
 
-            var category = await _repository.AddAsync(_mapper.Map<CategoryDto, Category>(entity));
+            var category = await _repository.Add(_mapper.Map<CategoryDto, Category>(entity));
             return _mapper.Map<Category, CategoryDto>(category);
         }
 
         public async Task DeleteAsync(int id)
         {
-            await _repository.DeleteAsync(id);
+            await _repository.Delete(id);
         }
 
         public async Task<IEnumerable<CategoryDto>> FindAsync(Expression<Func<CategoryDto, bool>> predicateDto)
         {
             var predicate = MapPredicate(predicateDto);
-            var categories = await _repository.FindAsync(predicate);
+            var categories = await _repository.Find(predicate);
             return categories.Select(category => _mapper.Map<CategoryDto>(category));
         }
 
-        public async Task<IEnumerable<CategoryDto>> GetAllAsync() => _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryDto>>(await _repository.GetAllAsync());
+        public async Task<IEnumerable<CategoryDto>> GetAllAsync() => _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryDto>>(await _repository.GetAll());
 
         public async Task<CategoryDto?> GetAsync(int id)
         {
-            var category = await _repository.GetByIdAsync(id);
+            var category = await _repository.GetById(id);
             return category == null ?
               throw new EntityDoesNotExistException($"Category with id {id} does not exists.") :
                 _mapper.Map<Category, CategoryDto>(category);
@@ -57,10 +57,10 @@ namespace IncidentAlert.Services.Implementation
             if (id != entity.Id)
                 throw new ArgumentException("The ID in the path does not match the ID in the provided data.");
 
-            if (!await _repository.ExistsAsync(c => c.Id == entity.Id))
+            if (!await _repository.Exists(c => c.Id == entity.Id))
                 throw new EntityDoesNotExistException($"Category with id {id} does not exists.");
 
-            var updatedCategory = await _repository.UpdateAsync(_mapper.Map<CategoryDto, Category>(entity));
+            var updatedCategory = await _repository.Update(_mapper.Map<CategoryDto, Category>(entity));
 
             return _mapper.Map<Category, CategoryDto>(updatedCategory);
         }
