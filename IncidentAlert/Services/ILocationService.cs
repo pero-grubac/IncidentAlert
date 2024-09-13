@@ -6,8 +6,8 @@ namespace IncidentAlert.Services
     {
         Task<IEnumerable<LocationDto>> GetAll();
         Task<LocationDto?> GetById(int id);
-        Task<LocationDto> Add(LocationDto entity);
-        Task<LocationDto> Update(int id, LocationDto entity);
+        Task<LocationDto> Add(LocationDto locationDto);
+        Task<LocationDto> Update(int id, LocationDto locationDto);
         Task Delete(int id);
     }
 }

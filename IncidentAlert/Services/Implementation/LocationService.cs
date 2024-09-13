@@ -10,13 +10,13 @@ namespace IncidentAlert.Services.Implementation
     {
         private readonly IMapper _mapper = mapper;
         private readonly ILocationRepository _repository = locationRepository;
-        public async Task<LocationDto> Add(LocationDto entity)
+        public async Task<LocationDto> Add(LocationDto locationDto)
         {
-            bool exists = await _repository.Exists(c => c.Name == entity.Name);
+            bool exists = await _repository.Exists(c => c.Name == locationDto.Name);
             if (exists)
                 throw new InvalidOperationException("Location already exists");
 
-            var location = await _repository.Add(_mapper.Map<LocationDto, Location>(entity));
+            var location = await _repository.Add(_mapper.Map<LocationDto, Location>(locationDto));
             return _mapper.Map<Location, LocationDto>(location);
         }
 
@@ -44,15 +44,15 @@ namespace IncidentAlert.Services.Implementation
                 _mapper.Map<Location, LocationDto>(location);
         }
 
-        public async Task<LocationDto> Update(int id, LocationDto entity)
+        public async Task<LocationDto> Update(int id, LocationDto locationDto)
         {
-            if (id != entity.Id)
+            if (id != locationDto.Id)
                 throw new ArgumentException("The ID in the path does not match the ID in the location.");
 
-            if (!await _repository.Exists(c => c.Id == entity.Id))
+            if (!await _repository.Exists(c => c.Id == locationDto.Id))
                 throw new EntityDoesNotExistException($"Location with id {id} does not exists.");
 
-            var location = await _repository.Update(_mapper.Map<LocationDto, Location>(entity));
+            var location = await _repository.Update(_mapper.Map<LocationDto, Location>(locationDto));
 
             return _mapper.Map<Location, LocationDto>(location);
         }
