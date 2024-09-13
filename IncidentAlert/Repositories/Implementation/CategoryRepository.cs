@@ -24,11 +24,13 @@ namespace IncidentAlert.Repositories.Implementation
 
         public async Task<bool> Exists(Expression<Func<Category, bool>> predicate) => await _dataContext.Categories.AnyAsync(predicate);
 
+        public async Task<Category?> FInd(Expression<Func<Category, bool>> predicate) => await _dataContext.Categories.FirstOrDefaultAsync(predicate);
+
         public async Task<IEnumerable<Category>> FindAll(Expression<Func<Category, bool>> predicate) => await _dataContext.Categories.Where(predicate).ToListAsync();
 
         public async Task<IEnumerable<Category>> GetAll() => await _dataContext.Categories.ToListAsync();
 
-        public async Task<Category?> GetById(int id) => await _dataContext.Categories.FirstOrDefaultAsync(e => e.Id == id);
+        public async Task<Category?> GetById(int id) => await FInd(e => e.Id == id);
 
         public async Task<Category> Update(Category category)
         {
