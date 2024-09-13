@@ -1,5 +1,6 @@
 ﻿using IncidentAlert.Data;
 using IncidentAlert.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace IncidentAlert.Repositories.Implementation
@@ -8,40 +9,24 @@ namespace IncidentAlert.Repositories.Implementation
     {
         private readonly DataContext _dataContext = dataContext;
 
-        public Task Approve(Incident incident, bool isApproved)
+        public async Task Delete(Incident incident)
         {
-            throw new NotImplementedException();
+            _dataContext.Incidents.Remove(incident);
+            await _dataContext.SaveChangesAsync();
         }
 
-        public Task Delete(Incident incident)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<bool> Exists(Expression<Func<Incident, bool>> predicate) => await _dataContext.Incidents.AnyAsync(predicate);
 
-        public Task<bool> Exists(Expression<Func<Incident, bool>> predicate)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<IEnumerable<Incident>> FindAll(Expression<Func<Incident, bool>> predicate) => await _dataContext.Incidents.Where(predicate).ToListAsync();
 
-        public Task<IEnumerable<Incident>> Find(Expression<Func<Incident, bool>> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Incident>> GetApproved()
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<IEnumerable<Incident>> GetApproved() => await FindAll(i => i.IsApproved == true);
 
         public Task<Incident?> GetById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Incident>> GetRequests()
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<IEnumerable<Incident>> GetRequests() => await FindAll(i => i.IsApproved == false);
 
         public Task<Incident> Update(Incident incident)
         {

@@ -11,6 +11,8 @@ namespace IncidentAlert.Repositories
         Task<Location> Update(Location location);
         Task Delete(Location entity);
         Task<bool> Exists(Expression<Func<Location, bool>> predicate);
-        Task<IEnumerable<Location>> Find(Expression<Func<Location, bool>> predicate);
+        Task<IEnumerable<Location>> FindAll(Expression<Func<Location, bool>> predicate);
+        Task<Location?> Find(Expression<Func<Location, bool>> predicate);
+
     }
 }

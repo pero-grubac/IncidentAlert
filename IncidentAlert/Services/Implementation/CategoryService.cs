@@ -38,7 +38,7 @@ namespace IncidentAlert.Services.Implementation
         public async Task<IEnumerable<CategoryDto>> Find(Expression<Func<CategoryDto, bool>> predicateDto)
         {
             var predicate = MapPredicate(predicateDto);
-            var categories = await _repository.Find(predicate);
+            var categories = await _repository.FindAll(predicate);
             return categories.Select(category => _mapper.Map<CategoryDto>(category));
         }
 
