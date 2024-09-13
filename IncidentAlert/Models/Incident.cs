@@ -13,6 +13,9 @@ namespace IncidentAlert.Models
         [Required]
         public DateTime DateTime { get; set; }
 
+        [Required]
+        public bool IsApproved { get; set; }
+
         [ForeignKey("LocationId")]
         public Location Location { get; set; } = null!;
 

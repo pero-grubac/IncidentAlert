@@ -4,6 +4,7 @@
     {
         public string Text { get; set; } = string.Empty;
         public DateTime DateTime { get; set; }
+        public bool IsApproved { get; set; }
 
         public Location Location { get; set; } = null!;
         public ICollection<CategoryDto> Categories { get; set; } = [];
