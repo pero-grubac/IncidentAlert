@@ -12,7 +12,7 @@ namespace IncidentAlert.Services.Implementation
     {
         private readonly IMapper _mapper = mapper;
         private readonly ICategoryRepository _repository = categoryRepository;
-        public async Task<CategoryDto> AddAsync(CategoryDto entity)
+        public async Task<CategoryDto> Add(CategoryDto entity)
         {
             bool exists = await _repository.Exists(c => c.Name == entity.Name);
             if (exists)
@@ -22,28 +22,36 @@ namespace IncidentAlert.Services.Implementation
             return _mapper.Map<Category, CategoryDto>(category);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task Delete(int id)
         {
-            await _repository.Delete(id);
+            var entity = await _repository.GetById(id) ?? throw new EntityDoesNotExistException($"Entity with ID {id} does not exist.");
+            try
+            {
+                await _repository.Delete(entity);
+            }
+            catch (Exception ex)
+            {
+                throw new EntityCannotBeDeletedException($"Entity with ID {id} cannot be deleted. {ex.Message}", ex);
+            }
         }
-
-        public async Task<IEnumerable<CategoryDto>> FindAsync(Expression<Func<CategoryDto, bool>> predicateDto)
+        // TODO delete
+        public async Task<IEnumerable<CategoryDto>> Find(Expression<Func<CategoryDto, bool>> predicateDto)
         {
             var predicate = MapPredicate(predicateDto);
             var categories = await _repository.Find(predicate);
             return categories.Select(category => _mapper.Map<CategoryDto>(category));
         }
 
-        public async Task<IEnumerable<CategoryDto>> GetAllAsync() => _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryDto>>(await _repository.GetAll());
+        public async Task<IEnumerable<CategoryDto>> GetAll() => _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryDto>>(await _repository.GetAll());
 
-        public async Task<CategoryDto?> GetAsync(int id)
+        public async Task<CategoryDto?> GetById(int id)
         {
             var category = await _repository.GetById(id);
             return category == null ?
               throw new EntityDoesNotExistException($"Category with id {id} does not exists.") :
                 _mapper.Map<Category, CategoryDto>(category);
         }
-
+        // TODO delete
         public Expression<Func<Category, bool>> MapPredicate(Expression<Func<CategoryDto, bool>> predicateDto)
         {
             var parameter = Expression.Parameter(typeof(Category), "c");
@@ -52,7 +60,7 @@ namespace IncidentAlert.Services.Implementation
             return Expression.Lambda<Func<Category, bool>>(body, parameter);
         }
 
-        public async Task<CategoryDto> UpdateAsync(int id, CategoryDto entity)
+        public async Task<CategoryDto> Update(int id, CategoryDto entity)
         {
             if (id != entity.Id)
                 throw new ArgumentException("The ID in the path does not match the ID in the provided data.");

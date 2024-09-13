@@ -9,7 +9,7 @@ namespace IncidentAlert.Repositories
         Task<Category?> GetById(int id);
         Task<Category> Add(Category category);
         Task<Category> Update(Category category);
-        Task Delete(int id);
+        Task Delete(Category entity);
         Task<bool> Exists(Expression<Func<Category, bool>> predicate);
         Task<IEnumerable<Category>> Find(Expression<Func<Category, bool>> predicate);
     }

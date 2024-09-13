@@ -4,11 +4,11 @@ namespace IncidentAlert.Services
 {
     public interface ICategoryService
     {
-        Task<IEnumerable<CategoryDto>> GetAllAsync();
-        Task<CategoryDto?> GetAsync(int id);
-        Task<CategoryDto> AddAsync(CategoryDto entity);
-        Task<CategoryDto> UpdateAsync(int id, CategoryDto entity);
-        Task DeleteAsync(int id);
+        Task<IEnumerable<CategoryDto>> GetAll();
+        Task<CategoryDto?> GetById(int id);
+        Task<CategoryDto> Add(CategoryDto entity);
+        Task<CategoryDto> Update(int id, CategoryDto entity);
+        Task Delete(int id);
 
     }
 }

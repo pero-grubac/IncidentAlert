@@ -1,5 +1,4 @@
 ﻿using IncidentAlert.Data;
-using IncidentAlert.Exceptions;
 using IncidentAlert.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -17,19 +16,10 @@ namespace IncidentAlert.Repositories.Implementation
             return category;
         }
 
-        public async Task Delete(int id)
+        public async Task Delete(Category entity)
         {
-            // TODO prebaci u servis, a da je repo samo za perzistenciju
-            var entity = await _dataContext.Categories.FirstOrDefaultAsync(x => x.Id == id) ?? throw new EntityDoesNotExistException($"Entity with ID {id} does not exist.");
-            try
-            {
-                _dataContext.Categories.Remove(entity);
-                await _dataContext.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new EntityCannotBeDeletedException($"Entity with ID {id} cannot be deleted. {ex.Message}", ex);
-            }
+            _dataContext.Categories.Remove(entity);
+            await _dataContext.SaveChangesAsync();
         }
 
         public async Task<bool> Exists(Expression<Func<Category, bool>> predicate) => await _dataContext.Categories.AnyAsync(predicate);

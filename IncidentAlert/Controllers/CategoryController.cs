@@ -17,7 +17,7 @@ namespace IncidentAlert.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var categories = await _categoryService.GetAllAsync();
+            var categories = await _categoryService.GetAll();
 
             return Ok(categories);
         }
@@ -30,7 +30,7 @@ namespace IncidentAlert.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var category = await _categoryService.GetAsync(id);
+            var category = await _categoryService.GetById(id);
             return Ok(category);
 
         }
@@ -43,7 +43,7 @@ namespace IncidentAlert.Controllers
             if (newCategory == null || !ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var category = await _categoryService.AddAsync(newCategory);
+            var category = await _categoryService.Add(newCategory);
 
             return Ok(category);
 
@@ -61,7 +61,7 @@ namespace IncidentAlert.Controllers
             if (id != newCategory.Id)
                 return BadRequest(ModelState);
 
-            var category = await _categoryService.UpdateAsync(id, newCategory);
+            var category = await _categoryService.Update(id, newCategory);
 
             return Ok(category);
         }
@@ -74,7 +74,7 @@ namespace IncidentAlert.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _categoryService.DeleteAsync(id);
+            await _categoryService.Delete(id);
 
             return Ok("Succesfully deleted");
         }
