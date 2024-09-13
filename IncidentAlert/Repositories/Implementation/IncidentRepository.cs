@@ -17,20 +17,21 @@ namespace IncidentAlert.Repositories.Implementation
 
         public async Task<bool> Exists(Expression<Func<Incident, bool>> predicate) => await _dataContext.Incidents.AnyAsync(predicate);
 
+        public async Task<Incident?> Find(Expression<Func<Incident, bool>> predicate) => await _dataContext.Incidents.FirstOrDefaultAsync(predicate);
+
         public async Task<IEnumerable<Incident>> FindAll(Expression<Func<Incident, bool>> predicate) => await _dataContext.Incidents.Where(predicate).ToListAsync();
 
         public async Task<IEnumerable<Incident>> GetApproved() => await FindAll(i => i.IsApproved == true);
 
-        public Task<Incident?> GetById(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<Incident?> GetById(int id) => await Find(i => i.Id == id);
 
         public async Task<IEnumerable<Incident>> GetRequests() => await FindAll(i => i.IsApproved == false);
 
-        public Task<Incident> Update(Incident incident)
+        public async Task<Incident> Update(Incident incident)
         {
-            throw new NotImplementedException();
+            _dataContext.Incidents.Update(incident);
+            await _dataContext.AddRangeAsync(incident);
+            return incident;
         }
     }
 }
