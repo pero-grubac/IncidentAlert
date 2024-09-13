@@ -6,8 +6,6 @@ namespace IncidentAlert.Repositories
     public interface ICategoryRepository
     {
         Task<IEnumerable<Category>> GetAll();
-        Task<IEnumerable<Incident>> GetIncidentsByCategoryId(int categoryId);
-
         Task<Category?> GetById(int id);
         Task<Category> Add(Category category);
         Task<Category> Update(Category category);

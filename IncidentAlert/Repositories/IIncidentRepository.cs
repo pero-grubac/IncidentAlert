@@ -7,6 +7,8 @@ namespace IncidentAlert.Repositories
     {
         Task<IEnumerable<Incident>> GetApproved();
         Task<IEnumerable<Incident>> GetRequests();
+        Task<IEnumerable<Incident>> GetByCategoryId(int categoryId);
+
         Task<Incident?> GetById(int id);
         Task<Incident> Update(Incident incident);
         Task<Incident> Add(Incident incident);

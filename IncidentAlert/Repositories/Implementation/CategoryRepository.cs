@@ -32,7 +32,6 @@ namespace IncidentAlert.Repositories.Implementation
 
         public async Task<Category?> GetById(int id) => await FInd(e => e.Id == id);
 
-        public async Task<IEnumerable<Incident>> GetIncidentsByCategoryId(int categoryId) => await _dataContext.IncidentCategories.Where(ic => ic.CategoryId == categoryId).Select(ic => ic.Incident).OrderByDescending(i => i.DateTime).ToListAsync();
 
         public async Task<Category> Update(Category category)
         {

@@ -24,14 +24,14 @@ namespace IncidentAlert.Services.Implementation
 
         public async Task Delete(int id)
         {
-            var entity = await _repository.GetById(id) ?? throw new EntityDoesNotExistException($"Entity with ID {id} does not exist.");
+            var entity = await _repository.GetById(id) ?? throw new EntityDoesNotExistException($"Category with ID {id} does not exist.");
             try
             {
                 await _repository.Delete(entity);
             }
             catch (Exception ex)
             {
-                throw new EntityCannotBeDeletedException($"Entity with ID {id} cannot be deleted. {ex.Message}", ex);
+                throw new EntityCannotBeDeletedException($"Category with ID {id} cannot be deleted. {ex.Message}", ex);
             }
         }
         // TODO delete
