@@ -9,6 +9,7 @@ namespace IncidentAlert.Repositories
         Task<IEnumerable<Incident>> GetRequests();
         Task<Incident?> GetById(int id);
         Task<Incident> Update(Incident incident);
+        Task<Incident> Add(Incident incident);
         Task Delete(Incident incident);
         Task<bool> Exists(Expression<Func<Incident, bool>> predicate);
         Task<IEnumerable<Incident>> FindAll(Expression<Func<Incident, bool>> predicate);

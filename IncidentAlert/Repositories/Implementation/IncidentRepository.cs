@@ -9,6 +9,13 @@ namespace IncidentAlert.Repositories.Implementation
     {
         private readonly DataContext _dataContext = dataContext;
 
+        public async Task<Incident> Add(Incident incident)
+        {
+            await _dataContext.Incidents.AddAsync(incident);
+            await _dataContext.SaveChangesAsync();
+            return incident;
+        }
+
         public async Task Delete(Incident incident)
         {
             _dataContext.Incidents.Remove(incident);
