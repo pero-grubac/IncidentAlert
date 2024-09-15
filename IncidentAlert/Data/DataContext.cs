@@ -45,6 +45,9 @@ namespace IncidentAlert.Data
                 .HasForeignKey(i => i.LocationId)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            modelBuilder.Entity<Location>()
+                .HasIndex(l => l.Name)
+                .IsUnique();
         }
 
     }

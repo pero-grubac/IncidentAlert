@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IncidentAlert.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class IncidentController(IIncidentService incidentService) : ControllerBase
     {
         private readonly IIncidentService _service = incidentService;

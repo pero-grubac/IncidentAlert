@@ -31,7 +31,7 @@ namespace IncidentAlert.Services.Implementation
             }
             catch (Exception ex)
             {
-                throw new EntityCannotBeDeletedException($"Category with ID {id} cannot be deleted. {ex.Message}", ex);
+                throw new EntityCannotBeDeletedException($"Category with ID {id} cannot be deleted.", ex);
             }
         }
         // TODO delete

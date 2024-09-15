@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IncidentAlert.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class LocationController(ILocationService locationService) : ControllerBase
     {
         private readonly ILocationService _service = locationService;
