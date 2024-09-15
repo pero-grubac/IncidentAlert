@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IncidentAlert.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240915081550_IncidentTime")]
-    partial class IncidentTime
+    [Migration("20240915084509_IncidentLocationRelation")]
+    partial class IncidentLocationRelation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -116,7 +116,7 @@ namespace IncidentAlert.Data.Migrations
                     b.HasOne("IncidentAlert.Models.Location", "Location")
                         .WithMany("Incidents")
                         .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
 
                     b.Navigation("Location");

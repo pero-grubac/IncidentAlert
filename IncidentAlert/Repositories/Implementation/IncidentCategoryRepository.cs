@@ -21,6 +21,20 @@ namespace IncidentAlert.Repositories.Implementation
             await _dataContext.SaveChangesAsync();
         }
 
+        public async Task DeleteAllWithIncidentId(int incidentId)
+        {
+            var incidentCategories = await FindAllByIncidentId(incidentId);
+            if (incidentCategories.Any())
+            {
+                _dataContext.IncidentCategories.RemoveRange(incidentCategories);
+                await _dataContext.SaveChangesAsync();
+            }
+        }
+
         public async Task<bool> Exists(Expression<Func<IncidentCategory, bool>> predicate) => await _dataContext.IncidentCategories.AnyAsync(predicate);
+
+        public async Task<ICollection<IncidentCategory>> FindAll(Expression<Func<IncidentCategory, bool>> predicate) => await _dataContext.IncidentCategories.Where(predicate).ToListAsync();
+
+        public async Task<ICollection<IncidentCategory>> FindAllByIncidentId(int incidentId) => await FindAll(ic => ic.IncidentId == incidentId);
     }
 }

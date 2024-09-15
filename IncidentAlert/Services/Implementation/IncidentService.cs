@@ -45,13 +45,18 @@ namespace IncidentAlert.Services.Implementation
             }
             else
             {
-                //  location = (await _locationRepository.Find(l => l.Name == incidentDto.Location.Name))!;
+                location = (await _locationRepository.Find(l => l.Name == incidentDto.Location.Name))!;
             }
 
 
             // incidentDto.Location = _mapper.Map<Location, LocationDto>(location!);
-
-            var incident = await _repository.Add(_mapper.Map<IncidentDto, Incident>(incidentDto));
+            var newIncident = new Incident
+            {
+                Text = incidentDto.Text,
+                DateTime = incidentDto.DateTime,
+                LocationId = location.Id,
+            };
+            var incident = await _repository.Add(newIncident);
 
             var incidentCategoriesTasks = incidentDto.Categories.Select(async item =>
             {
@@ -67,7 +72,7 @@ namespace IncidentAlert.Services.Implementation
 
             var newIncidentDto = _mapper.Map<Incident, IncidentDto>(incident);
             newIncidentDto.Categories = incidentDto.Categories;
-
+            newIncidentDto.Location = _mapper.Map<Location, LocationDto>(location);
             return newIncidentDto;
         }
 
@@ -76,6 +81,7 @@ namespace IncidentAlert.Services.Implementation
             var entity = await _repository.GetById(id) ?? throw new EntityDoesNotExistException($"Incident with ID {id} does not exist.");
             try
             {
+                await _incidentCategoryRepository.DeleteAllWithIncidentId(id);
                 await _repository.Delete(entity);
             }
             catch (Exception ex)

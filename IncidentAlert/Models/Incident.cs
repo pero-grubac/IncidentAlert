@@ -21,7 +21,7 @@ namespace IncidentAlert.Models
 
         [ForeignKey("LocationId")]
         public int LocationId { get; set; }
-        public Location Location { get; set; } = null!;
+        public Location? Location { get; set; }
 
         public ICollection<IncidentCategory> IncidentCategories { get; set; } = new List<IncidentCategory>();
     }

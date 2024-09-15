@@ -113,7 +113,7 @@ namespace IncidentAlert.Data.Migrations
                     b.HasOne("IncidentAlert.Models.Location", "Location")
                         .WithMany("Incidents")
                         .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
 
                     b.Navigation("Location");
