@@ -33,6 +33,21 @@ namespace IncidentAlert.Data
                 .HasForeignKey(ic => ic.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Location>()
+                .HasMany(l => l.Incidents)
+                .WithOne(i => i.Location)
+                .HasForeignKey(i => i.LocationId)
+                .IsRequired();
+
+        }
+        public void Detach<TEntity>(TEntity entity) where TEntity : class
+        {
+            var entry = this.Entry(entity);
+            if (entry.State == EntityState.Detached)
+            {
+                return;
+            }
+            entry.State = EntityState.Detached;
         }
     }
 }

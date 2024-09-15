@@ -26,7 +26,14 @@ namespace IncidentAlert.Repositories.Implementation
 
         public async Task<Incident?> Find(Expression<Func<Incident, bool>> predicate) => await _dataContext.Incidents.FirstOrDefaultAsync(predicate);
 
-        public async Task<IEnumerable<Incident>> FindAll(Expression<Func<Incident, bool>> predicate) => await _dataContext.Incidents.Where(predicate).ToListAsync();
+        public async Task<IEnumerable<Incident>> FindAll(Expression<Func<Incident, bool>> predicate)
+        {
+            return await _dataContext.Incidents.Where(predicate)
+                 .Include(i => i.Location)
+                 .Include(i => i.IncidentCategories)
+                  .ThenInclude(ic => ic.Category)
+                .ToListAsync();
+        }
 
         public async Task<IEnumerable<Incident>> GetApproved() => await FindAll(i => i.IsApproved == true);
 
@@ -41,6 +48,19 @@ namespace IncidentAlert.Repositories.Implementation
             _dataContext.Incidents.Update(incident);
             await _dataContext.AddRangeAsync(incident);
             return incident;
+        }
+        public void Attach(Incident incident)
+        {
+            _dataContext.Attach(incident);
+        }
+        public void Detach<TEntity>(TEntity entity) where TEntity : class
+        {
+            var entry = _dataContext.Entry(entity);
+            if (entry.State == EntityState.Detached)
+            {
+                return;
+            }
+            entry.State = EntityState.Detached;
         }
     }
 }

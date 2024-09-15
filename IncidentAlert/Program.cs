@@ -25,15 +25,32 @@ builder.Services.AddDbContext<DataContext>(
 
 // Repository
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ILocationRepository, LocationRepository>();
+builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
+builder.Services.AddScoped<IIncidentCategoryRepository, IncidentCategoryRepository>();
 
 // Service
 builder.Services.AddScoped<ICategoryService, CategoryService>();
-
+builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddScoped<IIncidentService, IncidentService>();
 
 // Logging
 builder.Host.UseSerilog((context, loggerConfig) =>
 {
     loggerConfig.ReadFrom.Configuration(context.Configuration);
+});
+
+// CORS
+var frontendUrl = builder.Configuration.GetValue<string>("FrontendUrl");
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder =>
+        {
+            builder.WithOrigins(frontendUrl)
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
 });
 
 var app = builder.Build();

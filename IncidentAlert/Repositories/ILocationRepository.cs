@@ -13,6 +13,6 @@ namespace IncidentAlert.Repositories
         Task<bool> Exists(Expression<Func<Location, bool>> predicate);
         Task<IEnumerable<Location>> FindAll(Expression<Func<Location, bool>> predicate);
         Task<Location?> Find(Expression<Func<Location, bool>> predicate);
-
+        void Attach(Location location);
     }
 }

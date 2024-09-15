@@ -4,8 +4,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace IncidentAlert.Models
 {
     [Table("incident")]
-    public class Incident : BaseEntity<int>
+    public class Incident
     {
+        [Key, Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
         [Required]
         public string Text { get; set; } = string.Empty;
@@ -17,9 +20,9 @@ namespace IncidentAlert.Models
         public bool IsApproved { get; set; }
 
         [ForeignKey("LocationId")]
+        public int LocationId { get; set; }
         public Location Location { get; set; } = null!;
 
-        [Required]
-        public ICollection<IncidentCategory> IncidentCategories { get; set; } = [];
+        public ICollection<IncidentCategory> IncidentCategories { get; set; } = new List<IncidentCategory>();
     }
 }

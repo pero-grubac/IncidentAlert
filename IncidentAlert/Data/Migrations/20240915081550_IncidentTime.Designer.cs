@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IncidentAlert.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240912195424_AddNewFields")]
-    partial class AddNewFields
+    [Migration("20240915081550_IncidentTime")]
+    partial class IncidentTime
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,6 +55,9 @@ namespace IncidentAlert.Data.Migrations
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("LocationId")
                         .HasColumnType("integer");

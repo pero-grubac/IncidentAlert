@@ -16,6 +16,7 @@ namespace IncidentAlert.Repositories
         Task<bool> Exists(Expression<Func<Incident, bool>> predicate);
         Task<IEnumerable<Incident>> FindAll(Expression<Func<Incident, bool>> predicate);
         Task<Incident?> Find(Expression<Func<Incident, bool>> predicate);
-
+        void Attach(Incident incident);
+        public void Detach<TEntity>(TEntity entity) where TEntity : class;
     }
 }

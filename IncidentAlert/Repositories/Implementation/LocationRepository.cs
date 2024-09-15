@@ -39,5 +39,9 @@ namespace IncidentAlert.Repositories.Implementation
             await _dataContext.SaveChangesAsync();
             return location;
         }
+        public void Attach(Location location)
+        {
+            _dataContext.Attach(location);
+        }
     }
 }

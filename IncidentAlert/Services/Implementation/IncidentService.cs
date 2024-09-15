@@ -6,14 +6,69 @@ using IncidentAlert.Repositories;
 
 namespace IncidentAlert.Services.Implementation
 {
-    public class IncidentService(IMapper mapper, IIncidentRepository incidentRepository) : IIncidentService
+    public class IncidentService(IMapper mapper, IIncidentRepository incidentRepository, ILocationRepository locationRepository, ICategoryRepository categoryRepository,
+        IIncidentCategoryRepository incidentCategoryRepository) : IIncidentService
     {
         private readonly IMapper _mapper = mapper;
-        private readonly IIncidentRepository _repository = incidentRepository;
+        private readonly IIncidentRepository _repository = incidentRepository; private readonly ILocationRepository _locationRepository = locationRepository;
+        private readonly ICategoryRepository _categoryRepository = categoryRepository;
+        private readonly IIncidentCategoryRepository _incidentCategoryRepository = incidentCategoryRepository;
         public async Task<IncidentDto> Add(IncidentDto incidentDto)
         {
+            var invalidCategoryTasks = incidentDto.Categories.Select(async c =>
+            {
+                var exists = await _categoryRepository.Exists(category => category.Id == c.Id);
+                return new { Category = c, Exists = exists };
+            }).ToList();
+
+            var invalidCategoriesResults = await Task.WhenAll(invalidCategoryTasks);
+
+            // Filtrirajte one koje ne postoje
+            var invalidCategories = invalidCategoriesResults
+                .Where(result => !result.Exists)
+                .Select(result => result.Category)
+                .ToList();
+
+            if (invalidCategories.Any())
+            {
+                throw new ArgumentException("One or more categories do not exist.");
+            };
+
+            incidentDto.DateTime = incidentDto.DateTime.ToUniversalTime();
+
+
+            var locationExists = await _locationRepository.Exists(l => l.Name == incidentDto.Location.Name);
+            Location location;
+            if (!locationExists)
+            {
+                location = await _locationRepository.Add(_mapper.Map<LocationDto, Location>(incidentDto.Location));
+            }
+            else
+            {
+                //  location = (await _locationRepository.Find(l => l.Name == incidentDto.Location.Name))!;
+            }
+
+
+            // incidentDto.Location = _mapper.Map<Location, LocationDto>(location!);
+
             var incident = await _repository.Add(_mapper.Map<IncidentDto, Incident>(incidentDto));
-            return _mapper.Map<Incident, IncidentDto>(incident);
+
+            var incidentCategoriesTasks = incidentDto.Categories.Select(async item =>
+            {
+                var incidentCategory = new IncidentCategory
+                {
+                    IncidentId = incident.Id,
+                    CategoryId = item.Id
+                };
+                await _incidentCategoryRepository.Add(incidentCategory);
+            });
+
+            await Task.WhenAll(incidentCategoriesTasks);
+
+            var newIncidentDto = _mapper.Map<Incident, IncidentDto>(incident);
+            newIncidentDto.Categories = incidentDto.Categories;
+
+            return newIncidentDto;
         }
 
         public async Task Delete(int id)

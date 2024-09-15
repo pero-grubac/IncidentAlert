@@ -4,8 +4,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace IncidentAlert.Models
 {
     [Table("location")]
-    public class Location : BaseEntity<int>
+    public class Location
     {
+        [Key, Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
         [Required]
         public double Latitude { get; set; }
 
