@@ -22,11 +22,14 @@ namespace IncidentAlert.Repositories.Implementation
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task<bool> Exists(Expression<Func<Location, bool>> predicate) => await _dataContext.Locations.AnyAsync(predicate);
+        public async Task<bool> Exists(Expression<Func<Location, bool>> predicate)
+            => await _dataContext.Locations.AnyAsync(predicate);
 
-        public async Task<Location?> Find(Expression<Func<Location, bool>> predicate) => await _dataContext.Locations.FirstOrDefaultAsync(predicate);
+        public async Task<Location?> Find(Expression<Func<Location, bool>> predicate)
+            => await _dataContext.Locations.FirstOrDefaultAsync(predicate);
 
-        public async Task<IEnumerable<Location>> FindAll(Expression<Func<Location, bool>> predicate) => await _dataContext.Locations.Where(predicate).ToListAsync();
+        public async Task<IEnumerable<Location>> FindAll(Expression<Func<Location, bool>> predicate)
+            => await _dataContext.Locations.Where(predicate).ToListAsync();
 
 
         public async Task<IEnumerable<Location>> GetAll() => await _dataContext.Locations.ToListAsync();
@@ -39,9 +42,6 @@ namespace IncidentAlert.Repositories.Implementation
             await _dataContext.SaveChangesAsync();
             return location;
         }
-        public void Attach(Location location)
-        {
-            _dataContext.Attach(location);
-        }
+
     }
 }

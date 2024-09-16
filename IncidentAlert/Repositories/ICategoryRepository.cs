@@ -12,7 +12,7 @@ namespace IncidentAlert.Repositories
         Task Delete(Category entity);
         Task<bool> Exists(Expression<Func<Category, bool>> predicate);
         Task<IEnumerable<Category>> FindAll(Expression<Func<Category, bool>> predicate);
-        Task<Category?> FInd(Expression<Func<Category, bool>> predicate);
+        Task<Category?> Find(Expression<Func<Category, bool>> predicate);
 
     }
 }

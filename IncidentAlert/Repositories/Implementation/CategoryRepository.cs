@@ -22,15 +22,18 @@ namespace IncidentAlert.Repositories.Implementation
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task<bool> Exists(Expression<Func<Category, bool>> predicate) => await _dataContext.Categories.AnyAsync(predicate);
+        public async Task<bool> Exists(Expression<Func<Category, bool>> predicate)
+            => await _dataContext.Categories.AnyAsync(predicate);
 
-        public async Task<Category?> FInd(Expression<Func<Category, bool>> predicate) => await _dataContext.Categories.FirstOrDefaultAsync(predicate);
+        public async Task<Category?> Find(Expression<Func<Category, bool>> predicate)
+            => await _dataContext.Categories.FirstOrDefaultAsync(predicate);
 
-        public async Task<IEnumerable<Category>> FindAll(Expression<Func<Category, bool>> predicate) => await _dataContext.Categories.Where(predicate).ToListAsync();
+        public async Task<IEnumerable<Category>> FindAll(Expression<Func<Category, bool>> predicate)
+            => await _dataContext.Categories.Where(predicate).ToListAsync();
 
         public async Task<IEnumerable<Category>> GetAll() => await _dataContext.Categories.ToListAsync();
 
-        public async Task<Category?> GetById(int id) => await FInd(e => e.Id == id);
+        public async Task<Category?> GetById(int id) => await Find(e => e.Id == id);
 
 
         public async Task<Category> Update(Category category)

@@ -31,10 +31,13 @@ namespace IncidentAlert.Repositories.Implementation
             }
         }
 
-        public async Task<bool> Exists(Expression<Func<IncidentCategory, bool>> predicate) => await _dataContext.IncidentCategories.AnyAsync(predicate);
+        public async Task<bool> Exists(Expression<Func<IncidentCategory, bool>> predicate)
+            => await _dataContext.IncidentCategories.AnyAsync(predicate);
 
-        public async Task<ICollection<IncidentCategory>> FindAll(Expression<Func<IncidentCategory, bool>> predicate) => await _dataContext.IncidentCategories.Where(predicate).ToListAsync();
+        public async Task<ICollection<IncidentCategory>> FindAll(Expression<Func<IncidentCategory, bool>> predicate)
+            => await _dataContext.IncidentCategories.Where(predicate).ToListAsync();
 
-        public async Task<ICollection<IncidentCategory>> FindAllByIncidentId(int incidentId) => await FindAll(ic => ic.IncidentId == incidentId);
+        public async Task<ICollection<IncidentCategory>> FindAllByIncidentId(int incidentId)
+            => await FindAll(ic => ic.IncidentId == incidentId);
     }
 }
