@@ -84,12 +84,12 @@ namespace IncidentAlert.Controllers
 
         [HttpGet("GetAllInDateRange")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
-        public async Task<IActionResult> GetAllInDateRange([FromBody] DateRange range)
+        public async Task<IActionResult> GetAllInDateRange([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var incidents = await _service.GetAllInDateRange(range.StartDate, range.EndDate);
+            var incidents = await _service.GetAllInDateRange(startDate, endDate);
 
             return Ok(incidents);
         }
