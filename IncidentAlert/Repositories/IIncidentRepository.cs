@@ -19,6 +19,7 @@ namespace IncidentAlert.Repositories
         Task<IEnumerable<Incident>> GetAllByCategoryName(string categoryName);
         Task<IEnumerable<Incident>> GetAllApprovedIncidentsOnDate(DateTime date);
         Task<IEnumerable<Incident>> GetAllApprovedIncidentsInDateRange(DateTime startDate, DateTime endDate);
+        Task<IEnumerable<Incident>> GetAllByLocationName(string locationName);
 
     }
 }

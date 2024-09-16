@@ -64,5 +64,8 @@ namespace IncidentAlert.Repositories.Implementation
 
         public async Task<IEnumerable<Incident>> GetAllApprovedIncidentsInDateRange(DateTime startDate, DateTime endDate)
             => await FindAll(i => i.IsApproved == true && i.DateTime.Date >= startDate.Date && i.DateTime.Date <= endDate.Date);
+
+        public async Task<IEnumerable<Incident>> GetAllByLocationName(string locationName)
+            => await FindAll(i => i.IsApproved == true && i.Location.Name == locationName);
     }
 }
