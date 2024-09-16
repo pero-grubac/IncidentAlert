@@ -58,7 +58,7 @@ namespace IncidentAlert.Controllers
         }
 
 
-        [HttpGet("GetByCategoryName/{name:string}")]
+        [HttpGet("GetByCategoryName/{name}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
         public async Task<IActionResult> GetAllByCategoryName(string name)
         {
@@ -70,9 +70,9 @@ namespace IncidentAlert.Controllers
             return Ok(incidents);
         }
 
-        [HttpGet("GetAllOnDate")]
+        [HttpGet("GetAllOnDate/{date:datetime}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
-        public async Task<IActionResult> GetAllOnDate([FromBody] DateTime date)
+        public async Task<IActionResult> GetAllOnDate(DateTime date)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -94,7 +94,7 @@ namespace IncidentAlert.Controllers
             return Ok(incidents);
         }
 
-        [HttpGet("GetAllByLocationName/{name:string}")]
+        [HttpGet("GetAllByLocationName/{name}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
         public async Task<IActionResult> GetAllByLocationName(string name)
         {

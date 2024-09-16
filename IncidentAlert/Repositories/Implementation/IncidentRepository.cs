@@ -36,7 +36,8 @@ namespace IncidentAlert.Repositories.Implementation
                         .OrderByDescending(i => i.DateTime)
                         .ToListAsync();
 
-        public async Task<IEnumerable<Incident>> GetApproved() => await FindAll(i => i.IsApproved == true);
+        public async Task<IEnumerable<Incident>> GetApproved()
+            => await FindAll(i => i.IsApproved == true);
 
         public async Task<IEnumerable<Incident>> GetAllByCategoryId(int categoryId)
             => await _dataContext.IncidentCategories
@@ -45,7 +46,8 @@ namespace IncidentAlert.Repositories.Implementation
 
         public async Task<Incident?> GetById(int id) => await Find(i => i.Id == id);
 
-        public async Task<IEnumerable<Incident>> GetRequests() => await FindAll(i => i.IsApproved == false);
+        public async Task<IEnumerable<Incident>> GetRequests()
+            => await FindAll(i => i.IsApproved == false);
 
         public async Task<Incident> Update(Incident incident)
         {
@@ -57,7 +59,8 @@ namespace IncidentAlert.Repositories.Implementation
         public async Task<IEnumerable<Incident>> GetAllByCategoryName(string categoryName)
             => await _dataContext.IncidentCategories
                         .Where(ic => ic.Category.Name == categoryName && ic.Incident.IsApproved == true)
-                        .Select(ic => ic.Incident).OrderByDescending(i => i.DateTime).ToListAsync();
+                        .Select(ic => ic.Incident)
+                        .OrderByDescending(i => i.DateTime).ToListAsync();
 
         public async Task<IEnumerable<Incident>> GetAllOnDate(DateTime date)
             => await FindAll(i => i.IsApproved == true && i.DateTime.Date == date.Date);
