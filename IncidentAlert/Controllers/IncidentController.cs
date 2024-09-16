@@ -114,9 +114,9 @@ namespace IncidentAlert.Controllers
             if (incidentDto == null || !ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var category = await _service.Add(incidentDto);
+            await _service.Add(incidentDto);
 
-            return Ok(category);
+            return Ok();
 
         }
         [HttpPut("{id:int}")]

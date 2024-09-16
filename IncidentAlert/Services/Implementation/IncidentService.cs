@@ -15,7 +15,7 @@ namespace IncidentAlert.Services.Implementation
         private readonly ILocationRepository _locationRepository = locationRepository;
         private readonly ICategoryRepository _categoryRepository = categoryRepository;
         private readonly IIncidentCategoryRepository _incidentCategoryRepository = incidentCategoryRepository;
-        public async Task<IncidentDto> Add(IncidentDto incidentDto)
+        public async Task Add(IncidentDto incidentDto)
         {
             var invalidCategoryTasks = incidentDto.Categories.Select(async c =>
             {
