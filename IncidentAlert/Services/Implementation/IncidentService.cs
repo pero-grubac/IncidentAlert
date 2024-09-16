@@ -91,14 +91,14 @@ namespace IncidentAlert.Services.Implementation
             }
         }
 
-        public async Task<IEnumerable<IncidentDto>> GetAllApprovedIncidentsInDateRange(DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<IncidentDto>> GetAllInDateRange(DateTime startDate, DateTime endDate)
             => _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>
-                (await _repository.GetAllApprovedIncidentsInDateRange(startDate, endDate));
+                (await _repository.GetAllInDateRange(startDate, endDate));
 
 
-        public async Task<IEnumerable<IncidentDto>> GetAllApprovedIncidentsOnDate(DateTime date)
+        public async Task<IEnumerable<IncidentDto>> GetAllOnDate(DateTime date)
             => _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>
-                (await _repository.GetAllApprovedIncidentsOnDate(date));
+                (await _repository.GetAllOnDate(date));
 
         public async Task<IEnumerable<IncidentDto>> GetAllByCategoryName(string categoryName)
             => _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>

@@ -17,8 +17,8 @@ namespace IncidentAlert.Repositories
         Task<IEnumerable<Incident>> FindAll(Expression<Func<Incident, bool>> predicate);
         Task<Incident?> Find(Expression<Func<Incident, bool>> predicate);
         Task<IEnumerable<Incident>> GetAllByCategoryName(string categoryName);
-        Task<IEnumerable<Incident>> GetAllApprovedIncidentsOnDate(DateTime date);
-        Task<IEnumerable<Incident>> GetAllApprovedIncidentsInDateRange(DateTime startDate, DateTime endDate);
+        Task<IEnumerable<Incident>> GetAllOnDate(DateTime date);
+        Task<IEnumerable<Incident>> GetAllInDateRange(DateTime startDate, DateTime endDate);
         Task<IEnumerable<Incident>> GetAllByLocationName(string locationName);
 
     }

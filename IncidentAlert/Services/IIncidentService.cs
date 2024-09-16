@@ -12,8 +12,8 @@ namespace IncidentAlert.Services
         Task<IncidentDto> Update(int id, IncidentDto incidentDto);
         Task Delete(int id);
         Task<IEnumerable<IncidentDto>> GetAllByCategoryName(string categoryName);
-        Task<IEnumerable<IncidentDto>> GetAllApprovedIncidentsOnDate(DateTime date);
-        Task<IEnumerable<IncidentDto>> GetAllApprovedIncidentsInDateRange(DateTime startDate, DateTime endDate);
+        Task<IEnumerable<IncidentDto>> GetAllOnDate(DateTime date);
+        Task<IEnumerable<IncidentDto>> GetAllInDateRange(DateTime startDate, DateTime endDate);
         Task<IEnumerable<IncidentDto>> GetAllByLocationName(string locationName);
 
     }

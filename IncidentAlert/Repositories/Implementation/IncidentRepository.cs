@@ -59,10 +59,10 @@ namespace IncidentAlert.Repositories.Implementation
                         .Where(ic => ic.Category.Name == categoryName && ic.Incident.IsApproved == true)
                         .Select(ic => ic.Incident).OrderByDescending(i => i.DateTime).ToListAsync();
 
-        public async Task<IEnumerable<Incident>> GetAllApprovedIncidentsOnDate(DateTime date)
+        public async Task<IEnumerable<Incident>> GetAllOnDate(DateTime date)
             => await FindAll(i => i.IsApproved == true && i.DateTime.Date == date.Date);
 
-        public async Task<IEnumerable<Incident>> GetAllApprovedIncidentsInDateRange(DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<Incident>> GetAllInDateRange(DateTime startDate, DateTime endDate)
             => await FindAll(i => i.IsApproved == true && i.DateTime.Date >= startDate.Date && i.DateTime.Date <= endDate.Date);
 
         public async Task<IEnumerable<Incident>> GetAllByLocationName(string locationName)

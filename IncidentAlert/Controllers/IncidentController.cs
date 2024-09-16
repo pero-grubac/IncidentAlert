@@ -44,6 +44,7 @@ namespace IncidentAlert.Controllers
 
             return Ok(incidents);
         }
+
         [HttpGet("{id:int}")]
         [ProducesResponseType(200, Type = typeof(IncidentDto))]
         public async Task<IActionResult> GetById(int id)
@@ -55,6 +56,56 @@ namespace IncidentAlert.Controllers
 
             return Ok(incidents);
         }
+
+
+        [HttpGet("GetByCategoryName/{name:string}")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
+        public async Task<IActionResult> GetAllByCategoryName(string name)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var incidents = await _service.GetAllByCategoryName(name);
+
+            return Ok(incidents);
+        }
+
+        [HttpGet("GetAllOnDate")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
+        public async Task<IActionResult> GetAllOnDate([FromBody] DateTime date)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var incidents = await _service.GetAllOnDate(date);
+
+            return Ok(incidents);
+        }
+
+        [HttpGet("GetAllInDateRange")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
+        public async Task<IActionResult> GetAllInDateRange([FromBody] DateRange range)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var incidents = await _service.GetAllInDateRange(range.StartDate, range.EndDate);
+
+            return Ok(incidents);
+        }
+
+        [HttpGet("GetAllByLocationName/{name:string}")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
+        public async Task<IActionResult> GetAllByLocationName(string name)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var incidents = await _service.GetAllByLocationName(name);
+
+            return Ok(incidents);
+        }
+
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
