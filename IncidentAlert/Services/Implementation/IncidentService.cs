@@ -6,11 +6,13 @@ using IncidentAlert.Repositories;
 
 namespace IncidentAlert.Services.Implementation
 {
-    public class IncidentService(IMapper mapper, IIncidentRepository incidentRepository, ILocationRepository locationRepository, ICategoryRepository categoryRepository,
+    public class IncidentService(IMapper mapper, IIncidentRepository incidentRepository,
+        ILocationRepository locationRepository, ICategoryRepository categoryRepository,
         IIncidentCategoryRepository incidentCategoryRepository) : IIncidentService
     {
         private readonly IMapper _mapper = mapper;
-        private readonly IIncidentRepository _repository = incidentRepository; private readonly ILocationRepository _locationRepository = locationRepository;
+        private readonly IIncidentRepository _repository = incidentRepository;
+        private readonly ILocationRepository _locationRepository = locationRepository;
         private readonly ICategoryRepository _categoryRepository = categoryRepository;
         private readonly IIncidentCategoryRepository _incidentCategoryRepository = incidentCategoryRepository;
         public async Task<IncidentDto> Add(IncidentDto incidentDto)
@@ -49,7 +51,6 @@ namespace IncidentAlert.Services.Implementation
             }
 
 
-            // incidentDto.Location = _mapper.Map<Location, LocationDto>(location!);
             var newIncident = new Incident
             {
                 Text = incidentDto.Text,
@@ -89,6 +90,23 @@ namespace IncidentAlert.Services.Implementation
                 throw new EntityCannotBeDeletedException($"Incident with ID {id} cannot be deleted. {ex.Message}", ex);
             }
         }
+
+        public async Task<IEnumerable<IncidentDto>> GetAllApprovedIncidentsInDateRange(DateTime startDate, DateTime endDate)
+            => _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>
+                (await _repository.GetAllApprovedIncidentsInDateRange(startDate, endDate));
+
+
+        public async Task<IEnumerable<IncidentDto>> GetAllApprovedIncidentsOnDate(DateTime date)
+            => _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>
+                (await _repository.GetAllApprovedIncidentsOnDate(date));
+
+        public async Task<IEnumerable<IncidentDto>> GetAllByCategoryName(string categoryName)
+            => _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>
+                (await _repository.GetAllByCategoryName(categoryName));
+
+        public async Task<IEnumerable<IncidentDto>> GetAllByLocationName(string locationName)
+             => _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>
+                (await _repository.GetAllByLocationName(locationName));
 
         public async Task<IEnumerable<IncidentDto>> GetApproved()
         {
