@@ -98,7 +98,7 @@ namespace IncidentAlert.Services.Implementation
 
         public async Task<IEnumerable<IncidentDto>> GetByCategoryId(int categoryId)
         {
-            var incidents = await _repository.GetByCategoryId(categoryId);
+            var incidents = await _repository.GetAllByCategoryId(categoryId);
             return _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>(incidents);
         }
 
