@@ -88,7 +88,6 @@ namespace IncidentAlert.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
             var incidents = await _service.GetAllInDateRange(startDate, endDate);
 
             return Ok(incidents);

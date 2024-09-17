@@ -71,10 +71,7 @@ namespace IncidentAlert.Services.Implementation
 
             await Task.WhenAll(incidentCategoriesTasks);
 
-            var newIncidentDto = _mapper.Map<Incident, IncidentDto>(incident);
-            newIncidentDto.Categories = incidentDto.Categories;
-            newIncidentDto.Location = _mapper.Map<Location, LocationDto>(location);
-            return newIncidentDto;
+
         }
 
         public async Task Delete(int id)
@@ -93,12 +90,12 @@ namespace IncidentAlert.Services.Implementation
 
         public async Task<IEnumerable<IncidentDto>> GetAllInDateRange(DateTime startDate, DateTime endDate)
             => _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>
-                (await _repository.GetAllInDateRange(startDate, endDate));
+                (await _repository.GetAllInDateRange(startDate.ToUniversalTime(), endDate.ToUniversalTime()));
 
 
         public async Task<IEnumerable<IncidentDto>> GetAllOnDate(DateTime date)
             => _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>
-                (await _repository.GetAllOnDate(date));
+                (await _repository.GetAllOnDate(date.ToUniversalTime()));
 
         public async Task<IEnumerable<IncidentDto>> GetAllByCategoryName(string categoryName)
             => _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>
