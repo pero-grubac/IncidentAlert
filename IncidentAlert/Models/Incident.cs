@@ -6,6 +6,7 @@ namespace IncidentAlert.Models
     [Table("incident")]
     public class Incident
     {
+        //TODO title and isApproved to be removed
         [Key, Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -17,7 +18,8 @@ namespace IncidentAlert.Models
         public DateTime DateTime { get; set; }
 
         [Required]
-        public bool IsApproved { get; set; }
+        public string Title { get; set; } = string.Empty;
+
 
         [ForeignKey("LocationId")]
         public int LocationId { get; set; }

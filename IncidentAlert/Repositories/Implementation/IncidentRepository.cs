@@ -37,16 +37,17 @@ namespace IncidentAlert.Repositories.Implementation
                         .ToListAsync();
 
         public async Task<IEnumerable<Incident>> GetApproved()
-            => await FindAll(i => i.IsApproved == true);
+            => await _dataContext.Incidents.ToListAsync();
+        //FindAll(i => i.IsApproved == true);
 
         public async Task<IEnumerable<Incident>> GetAllByCategoryId(int categoryId)
-            => await FindAll(i => i.IncidentCategories.Any(ic => ic.CategoryId == categoryId) && i.IsApproved == true);
+            => await FindAll(i => i.IncidentCategories.Any(ic => ic.CategoryId == categoryId));
 
         public async Task<Incident?> GetById(int id) => await Find(i => i.Id == id);
 
-        public async Task<IEnumerable<Incident>> GetRequests()
-            => await FindAll(i => i.IsApproved == false);
-
+        /* public async Task<IEnumerable<Incident>> GetRequests()
+             => await _dataContext.Incidents.ToListAsync();
+        */
         public async Task<Incident> Update(Incident incident)
         {
             _dataContext.Incidents.Update(incident);
@@ -55,16 +56,15 @@ namespace IncidentAlert.Repositories.Implementation
         }
 
         public async Task<IEnumerable<Incident>> GetAllByCategoryName(string categoryName)
-            => await FindAll(i => i.IncidentCategories.Any(ic => ic.Category.Name.ToLower() == categoryName.ToLower())
-                                && i.IsApproved == true);
+            => await FindAll(i => i.IncidentCategories.Any(ic => ic.Category.Name.ToLower() == categoryName.ToLower()));
 
         public async Task<IEnumerable<Incident>> GetAllOnDate(DateTime date)
-            => await FindAll(i => i.IsApproved == true && i.DateTime.Date == date.Date);
+            => await FindAll(i => i.DateTime.Date == date.Date);
 
         public async Task<IEnumerable<Incident>> GetAllInDateRange(DateTime startDate, DateTime endDate)
-            => await FindAll(i => i.IsApproved == true && i.DateTime.Date >= startDate.Date && i.DateTime.Date <= endDate.Date);
+            => await FindAll(i => i.DateTime.Date >= startDate.Date && i.DateTime.Date <= endDate.Date);
 
         public async Task<IEnumerable<Incident>> GetAllByLocationName(string locationName)
-            => await FindAll(i => i.IsApproved == true && i.Location.Name.ToLower() == locationName.ToLower());
+            => await FindAll(i => i.Location.Name.ToLower() == locationName.ToLower());
     }
 }
