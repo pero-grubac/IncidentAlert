@@ -105,7 +105,7 @@ namespace IncidentAlert.Services.Implementation
              => _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>
                 (await _repository.GetAllByLocationName(locationName));
 
-        public async Task<IEnumerable<IncidentDto>> GetApproved()
+        public async Task<IEnumerable<IncidentDto>> GetAll()
         {
             var incidents = await _repository.GetApproved();
             return _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>(incidents);
@@ -125,11 +125,7 @@ namespace IncidentAlert.Services.Implementation
                    _mapper.Map<Incident, IncidentDto>(incident);
         }
 
-        public async Task<IEnumerable<IncidentDto>> GetRequests()
-        {
-            var incidents = await _repository.GetRequests();
-            return _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>(incidents);
-        }
+
 
         public async Task<IncidentDto> Update(int id, IncidentDto incidentDto)
         {

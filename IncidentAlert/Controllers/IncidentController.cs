@@ -17,7 +17,7 @@ namespace IncidentAlert.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var incidents = await _service.GetApproved();
+            var incidents = await _service.GetAll();
 
             return Ok(incidents);
         }
