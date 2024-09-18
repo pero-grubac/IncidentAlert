@@ -10,9 +10,9 @@ namespace IncidentAlert.Controllers
     {
         private readonly IIncidentService _service = incidentService;
 
-        [HttpGet("getApproved")]
+        [HttpGet("getAll")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
-        public async Task<IActionResult> GetApproved()
+        public async Task<IActionResult> GetAll()
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
