@@ -17,6 +17,11 @@ namespace IncidentAlert.Services.Implementation
         private readonly IIncidentCategoryRepository _incidentCategoryRepository = incidentCategoryRepository;
         public async Task Add(IncidentDto incidentDto)
         {
+            if (incidentDto.Categories.Count == 0)
+            {
+                throw new EntityCanNotBeCreatedException("Incident needs to belong to a category");
+            };
+
             var invalidCategoryTasks = incidentDto.Categories.Select(async c =>
             {
                 var exists = await _categoryRepository.Exists(category => category.Id == c.Id);
@@ -33,7 +38,7 @@ namespace IncidentAlert.Services.Implementation
 
             if (invalidCategories.Any())
             {
-                throw new ArgumentException("One or more categories do not exist.");
+                throw new EntityCanNotBeCreatedException("One or more categories do not exist.");
             };
 
             incidentDto.DateTime = incidentDto.DateTime.ToUniversalTime();

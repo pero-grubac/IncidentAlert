@@ -34,6 +34,11 @@ namespace IncidentAlert.Middleware
                     Code = (int)HttpStatusCode.Conflict,  // 409 Conflict
                     Message = custom.GetBaseMessage(),
                 },
+                EntityCanNotBeCreatedException custom => new ErrorDetails
+                {
+                    Code = (int)HttpStatusCode.BadRequest, // 404 Not Found
+                    Message = custom.GetBaseMessage(),
+                },
                 ArgumentException => new ErrorDetails
                 {
                     Code = (int)HttpStatusCode.BadRequest,  // 400 Bad Request
