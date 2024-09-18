@@ -36,8 +36,8 @@ namespace IncidentAlert.Repositories.Implementation
                         .OrderByDescending(i => i.DateTime)
                         .ToListAsync();
 
-        public async Task<IEnumerable<Incident>> GetApproved()
-            => await _dataContext.Incidents.ToListAsync();
+        public async Task<IEnumerable<Incident>> GetAll()
+            => await FindAll(i => true);
         //FindAll(i => i.IsApproved == true);
 
         public async Task<IEnumerable<Incident>> GetAllByCategoryId(int categoryId)

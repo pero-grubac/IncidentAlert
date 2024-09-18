@@ -54,6 +54,7 @@ namespace IncidentAlert.Services.Implementation
             var newIncident = new Incident
             {
                 Text = incidentDto.Text,
+                Title = incidentDto.Title,
                 DateTime = incidentDto.DateTime,
                 LocationId = location.Id,
             };
@@ -107,7 +108,7 @@ namespace IncidentAlert.Services.Implementation
 
         public async Task<IEnumerable<IncidentDto>> GetAll()
         {
-            var incidents = await _repository.GetApproved();
+            var incidents = await _repository.GetAll();
             return _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>(incidents);
         }
 
