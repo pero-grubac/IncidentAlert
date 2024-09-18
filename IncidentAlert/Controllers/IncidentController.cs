@@ -22,17 +22,7 @@ namespace IncidentAlert.Controllers
             return Ok(incidents);
         }
 
-        [HttpGet("getRequests")]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
-        public async Task<IActionResult> GetRequested()
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
-            var incidents = await _service.GetRequests();
-
-            return Ok(incidents);
-        }
         [HttpGet("getByCategoryId/{id:int}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
         public async Task<IActionResult> GetByCategeoryId(int id)
