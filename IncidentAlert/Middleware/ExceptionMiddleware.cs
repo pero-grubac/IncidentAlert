@@ -39,6 +39,11 @@ namespace IncidentAlert.Middleware
                     Code = (int)HttpStatusCode.BadRequest, // 404 Not Found
                     Message = custom.GetBaseMessage(),
                 },
+                FileEmptyException => new ErrorDetails
+                {
+                    Code = (int)HttpStatusCode.BadRequest,  // 400 Bad Request
+                    Message = ex.Message
+                },
                 ArgumentException => new ErrorDetails
                 {
                     Code = (int)HttpStatusCode.BadRequest,  // 400 Bad Request

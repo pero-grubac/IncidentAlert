@@ -28,11 +28,13 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ILocationRepository, LocationRepository>();
 builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
 builder.Services.AddScoped<IIncidentCategoryRepository, IncidentCategoryRepository>();
+builder.Services.AddScoped<IImageRepository, ImageRepository>();
 
 // Service
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ILocationService, LocationService>();
 builder.Services.AddScoped<IIncidentService, IncidentService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 
 // Logging
 builder.Host.UseSerilog((context, loggerConfig) =>
