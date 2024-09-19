@@ -7,5 +7,6 @@ namespace IncidentAlert.Services
         Task Add(IFormFile file, int incidentId);
         Task Delete(int incidentId);
         Task<IEnumerable<Image>> GetAllByIncidentId(int incidentId);
+        Task<ICollection<string>?> GetImageNames(int incidentId);
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace IncidentAlert.Models.Dto
 {
-    public class IncidentDto
+    public class ResponseIncidentDto
     {
         public int Id { get; set; }
 
@@ -11,6 +11,6 @@
 
         public LocationDto Location { get; set; } = null!;
         public ICollection<CategoryDto> Categories { get; set; } = [];
-        public ICollection<IFormFile> Images { get; set; } = [];
+        public ICollection<string> Images { get; set; } = [];
     }
 }

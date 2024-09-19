@@ -75,5 +75,12 @@ namespace IncidentAlert.Services.Implementation
             return await _imageRepository.GetByIncidentId(incidentId);
 
         }
+
+        public async Task<ICollection<string>?> GetImageNames(int incidentId)
+        {
+            var images = await _imageRepository.GetByIncidentId(incidentId);
+            var imagePaths = images?.Select(image => image.FilePath.TrimStart('/')).ToList() ?? new List<string>();
+            return imagePaths;
+        }
     }
 }

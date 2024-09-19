@@ -8,13 +8,15 @@ namespace IncidentAlert.Services.Implementation
 {
     public class IncidentService(IMapper mapper, IIncidentRepository incidentRepository,
         ILocationRepository locationRepository, ICategoryRepository categoryRepository,
-        IIncidentCategoryRepository incidentCategoryRepository) : IIncidentService
+        IIncidentCategoryRepository incidentCategoryRepository, IImageService imageService) : IIncidentService
     {
         private readonly IMapper _mapper = mapper;
         private readonly IIncidentRepository _repository = incidentRepository;
         private readonly ILocationRepository _locationRepository = locationRepository;
         private readonly ICategoryRepository _categoryRepository = categoryRepository;
         private readonly IIncidentCategoryRepository _incidentCategoryRepository = incidentCategoryRepository;
+        private readonly IImageService _imageService = imageService;
+
         public async Task Add(IncidentDto incidentDto)
         {
             if (incidentDto.Categories.Count == 0)
@@ -76,8 +78,9 @@ namespace IncidentAlert.Services.Implementation
             });
 
             await Task.WhenAll(incidentCategoriesTasks);
-
-
+            // Create Images
+            if (incidentDto.Images.Count > 0)
+                await Task.WhenAll(incidentDto.Images.Select(async item => await _imageService.Add(item, incident.Id)));
         }
 
         public async Task Delete(int id)
@@ -86,7 +89,10 @@ namespace IncidentAlert.Services.Implementation
             try
             {
                 await _incidentCategoryRepository.DeleteAllWithIncidentId(id);
+                var images = await _imageService.GetAllByIncidentId(id);
+                await Task.WhenAll(images.Select(async item => await _imageService.Delete(item.Id)));
                 await _repository.Delete(entity);
+
             }
             catch (Exception ex)
             {
@@ -117,18 +123,24 @@ namespace IncidentAlert.Services.Implementation
             return _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>(incidents);
         }
 
-        public async Task<IEnumerable<IncidentDto>> GetByCategoryId(int categoryId)
+        public async Task<IEnumerable<ResponseIncidentDto>> GetByCategoryId(int categoryId)
         {
             var incidents = await _repository.GetAllByCategoryId(categoryId);
-            return _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>(incidents);
+            var response = _mapper.Map<IEnumerable<Incident>, IEnumerable<ResponseIncidentDto>>(incidents);
+
+            await Task.WhenAll(response.Select(async incident =>
+                incident.Images = await _imageService.GetImageNames(incident.Id) ?? []));
+            return response;
         }
 
-        public async Task<IncidentDto> GetById(int id)
+        public async Task<ResponseIncidentDto> GetById(int id)
         {
             var incident = await _repository.GetById(id);
-            return incident == null ?
+            var response = incident == null ?
                    throw new EntityDoesNotExistException($"Incident with id {id} does not exists.") :
-                   _mapper.Map<Incident, IncidentDto>(incident);
+                   _mapper.Map<Incident, ResponseIncidentDto>(incident);
+            response.Images = await _imageService.GetImageNames(id) ?? [];
+            return response;
         }
 
 
