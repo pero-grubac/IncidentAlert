@@ -9,6 +9,7 @@ namespace IncidentAlert.Data
         public DbSet<Incident> Incidents { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<IncidentCategory> IncidentCategories { get; set; }
+        public DbSet<Image> Images { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -48,6 +49,11 @@ namespace IncidentAlert.Data
             modelBuilder.Entity<Location>()
                 .HasIndex(l => l.Name)
                 .IsUnique();
+
+            modelBuilder.Entity<Image>()
+                .HasOne<Incident>()
+                .WithMany(i => i.Images)
+                .HasForeignKey(i => i.IncidentId);
         }
 
     }

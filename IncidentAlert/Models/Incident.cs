@@ -6,7 +6,6 @@ namespace IncidentAlert.Models
     [Table("incident")]
     public class Incident
     {
-        //TODO title and isApproved to be removed
         [Key, Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -26,5 +25,6 @@ namespace IncidentAlert.Models
         public Location? Location { get; set; }
 
         public ICollection<IncidentCategory> IncidentCategories { get; set; } = new List<IncidentCategory>();
+        public ICollection<Image> Images { get; set; } = new List<Image>();
     }
 }
