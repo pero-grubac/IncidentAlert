@@ -44,6 +44,11 @@ namespace IncidentAlert.Middleware
                     Code = (int)HttpStatusCode.BadRequest,  // 400 Bad Request
                     Message = ex.Message
                 },
+                DirectoryCreationException => new ErrorDetails
+                {
+                    Code = (int)HttpStatusCode.InternalServerError,
+                    Message = ex.Message
+                },
                 ArgumentException => new ErrorDetails
                 {
                     Code = (int)HttpStatusCode.BadRequest,  // 400 Bad Request

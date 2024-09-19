@@ -31,6 +31,22 @@ namespace IncidentAlert.Services.Implementation
                     throw new DirectoryCreationException("Could not create directory for uploads", ex);
                 }
             }
+            var filePath = Path.Combine(uploadsFolderPath, file.FileName);
+            try
+            {
+                using var stream = new FileStream(filePath, FileMode.Create);
+                await file.CopyToAsync(stream);
+            }
+            catch (Exception ex)
+            {
+                throw new FileSaveException("An error occurred while saving the file", ex);
+            }
+            var image = new Image
+            {
+                FilePath = $"/uploads/{incidentId}/{file.FileName}",
+                IncidentId = incidentId
+            };
+            await _imageRepository.Add(image);
         }
 
         public Task Delete(int incidentId)
