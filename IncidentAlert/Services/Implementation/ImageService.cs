@@ -49,14 +49,31 @@ namespace IncidentAlert.Services.Implementation
             await _imageRepository.Add(image);
         }
 
-        public Task Delete(int incidentId)
+        public async Task Delete(int imageId)
         {
-            throw new NotImplementedException();
+            var image = await _imageRepository.GetById(imageId)
+                ?? throw new EntityDoesNotExistException("Image not found");
+
+            var filePath = Path.Combine(_environment.WebRootPath, image.FilePath.TrimStart('/'));
+            try
+            {
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new EntityCannotBeDeletedException($"An error occurred while deleting the file: {image.FilePath}", ex);
+            }
+
+            await _imageRepository.Delete(imageId);
         }
 
-        public Task<IEnumerable<IFormFile>> GetAllByIncidentId()
+        public async Task<IEnumerable<Image>> GetAllByIncidentId(int incidentId)
         {
-            throw new NotImplementedException();
+            return await _imageRepository.GetByIncidentId(incidentId);
+
         }
     }
 }
