@@ -102,33 +102,51 @@ namespace IncidentAlert.Services.Implementation
             }
         }
 
-        public async Task<IEnumerable<IncidentDto>> GetAllInDateRange(DateTime startDate, DateTime endDate)
-            => _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>
-                (await _repository.GetAllInDateRange(startDate.ToUniversalTime(), endDate.ToUniversalTime()));
+        public async Task<IEnumerable<ResponseIncidentDto>> GetAllInDateRange(DateTime startDate, DateTime endDate)
+        {
+            var incidents = _mapper.Map<IEnumerable<Incident>, IEnumerable<ResponseIncidentDto>>
+                  (await _repository.GetAllInDateRange(startDate.ToUniversalTime(), endDate.ToUniversalTime()));
+            var response = await MapImageNames(incidents);
+            return response;
+        }
 
 
-        public async Task<IEnumerable<IncidentDto>> GetAllOnDate(DateTime date)
-            => _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>
-                (await _repository.GetAllOnDate(date.ToUniversalTime()));
+        public async Task<IEnumerable<ResponseIncidentDto>> GetAllOnDate(DateTime date)
+        {
+            var incidents = _mapper.Map<IEnumerable<Incident>, IEnumerable<ResponseIncidentDto>>
+                  (await _repository.GetAllOnDate(date.ToUniversalTime()));
+            var response = await MapImageNames(incidents);
+            return response;
+        }
 
-        public async Task<IEnumerable<IncidentDto>> GetAllByCategoryName(string categoryName)
-            => _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>
-                (await _repository.GetAllByCategoryName(categoryName));
+        public async Task<IEnumerable<ResponseIncidentDto>> GetAllByCategoryName(string categoryName)
+        {
+            var incidents = _mapper.Map<IEnumerable<Incident>, IEnumerable<ResponseIncidentDto>>
+                  (await _repository.GetAllByCategoryName(categoryName));
+            var response = await MapImageNames(incidents);
+            return response;
+        }
 
-        public async Task<IEnumerable<IncidentDto>> GetAllByLocationName(string locationName)
-             => _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>
-                (await _repository.GetAllByLocationName(locationName));
+        public async Task<IEnumerable<ResponseIncidentDto>> GetAllByLocationName(string locationName)
+        {
+            var incidents = _mapper.Map<IEnumerable<Incident>, IEnumerable<ResponseIncidentDto>>
+                  (await _repository.GetAllByLocationName(locationName));
+            var response = await MapImageNames(incidents);
+            return response;
+        }
 
-        public async Task<IEnumerable<IncidentDto>> GetAll()
+        public async Task<IEnumerable<ResponseIncidentDto>> GetAll()
         {
             var incidents = await _repository.GetAll();
-            return _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>(incidents);
+            var response = await MapImageNames(_mapper.Map<IEnumerable<Incident>, IEnumerable<ResponseIncidentDto>>(incidents));
+            return response;
         }
 
         public async Task<IEnumerable<ResponseIncidentDto>> MapImageNames(IEnumerable<ResponseIncidentDto> incidents)
         {
-            await Task.WhenAll(incidents.Select(async incident =>
-                incident.Images = await _imageService.GetImageNames(incident.Id) ?? []).ToList());
+
+            foreach (var incident in incidents)
+                incident.Images = await _imageService.GetImageNames(incident.Id) ?? [];
             return incidents;
         }
         public async Task<IEnumerable<ResponseIncidentDto>> GetByCategoryId(int categoryId)
