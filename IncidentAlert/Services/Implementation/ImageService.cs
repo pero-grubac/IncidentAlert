@@ -5,11 +5,13 @@ using IncidentAlert.Repositories;
 namespace IncidentAlert.Services.Implementation
 {
     public class ImageService(IWebHostEnvironment environment, IImageRepository imageRepository,
-        IIncidentRepository incidentRepository) : IImageService
+        IIncidentRepository incidentRepository, IHttpContextAccessor httpContextAccessor) : IImageService
     {
         private readonly IWebHostEnvironment _environment = environment;
         private readonly IImageRepository _imageRepository = imageRepository;
         private readonly IIncidentRepository _incidentRepository = incidentRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+
         public async Task Add(IFormFile file, int incidentId)
         {
 
@@ -79,7 +81,14 @@ namespace IncidentAlert.Services.Implementation
         public async Task<ICollection<string>?> GetImageNames(int incidentId)
         {
             var images = await _imageRepository.GetByIncidentId(incidentId);
-            var imagePaths = images?.Select(image => image.FilePath.TrimStart('/')).ToList() ?? new List<string>();
+
+            var request = _httpContextAccessor.HttpContext?.Request;
+            var baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}";
+
+            var imagePaths = images?
+                .Select(image => $"{baseUrl}/{image.FilePath.TrimStart('/')}")
+                .ToList() ?? new List<string>();
+
             return imagePaths;
         }
     }
