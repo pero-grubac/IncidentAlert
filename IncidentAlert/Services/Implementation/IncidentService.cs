@@ -26,7 +26,7 @@ namespace IncidentAlert.Services.Implementation
 
             var invalidCategoryTasks = incidentDto.Categories.Select(async c =>
             {
-                var exists = await _categoryRepository.Exists(category => category.Id == c.Id);
+                var exists = await _categoryRepository.Exists(category => category.Name == c);
                 return new { Category = c, Exists = exists };
             }).ToList();
 
@@ -69,10 +69,12 @@ namespace IncidentAlert.Services.Implementation
 
             var incidentCategoriesTasks = incidentDto.Categories.Select(async item =>
             {
+                var category = await _categoryRepository.Find(c => c.Name == item);
+
                 var incidentCategory = new IncidentCategory
                 {
                     IncidentId = incident.Id,
-                    CategoryId = item.Id
+                    CategoryId = category!.Id
                 };
                 await _incidentCategoryRepository.Add(incidentCategory);
             });
@@ -80,7 +82,7 @@ namespace IncidentAlert.Services.Implementation
             await Task.WhenAll(incidentCategoriesTasks);
             // Create Images
             if (incidentDto.Images.Count > 0)
-                await Task.WhenAll(incidentDto.Images.Select(async item => await _imageService.Add(item, incident.Id)));
+                await Task.WhenAll(incidentDto.Images.Select(async item => await _imageService.Add(item, incident.Id)).ToList());
         }
 
         public async Task Delete(int id)
@@ -90,7 +92,7 @@ namespace IncidentAlert.Services.Implementation
             {
                 await _incidentCategoryRepository.DeleteAllWithIncidentId(id);
                 var images = await _imageService.GetAllByIncidentId(id);
-                await Task.WhenAll(images.Select(async item => await _imageService.Delete(item.Id)));
+                await Task.WhenAll(images.Select(async item => await _imageService.Delete(item.Id)).ToList());
                 await _repository.Delete(entity);
 
             }
@@ -123,13 +125,16 @@ namespace IncidentAlert.Services.Implementation
             return _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>(incidents);
         }
 
+        public async Task<IEnumerable<ResponseIncidentDto>> MapImageNames(IEnumerable<ResponseIncidentDto> incidents)
+        {
+            await Task.WhenAll(incidents.Select(async incident =>
+                incident.Images = await _imageService.GetImageNames(incident.Id) ?? []).ToList());
+            return incidents;
+        }
         public async Task<IEnumerable<ResponseIncidentDto>> GetByCategoryId(int categoryId)
         {
             var incidents = await _repository.GetAllByCategoryId(categoryId);
-            var response = _mapper.Map<IEnumerable<Incident>, IEnumerable<ResponseIncidentDto>>(incidents);
-
-            await Task.WhenAll(response.Select(async incident =>
-                incident.Images = await _imageService.GetImageNames(incident.Id) ?? []));
+            var response = await MapImageNames(_mapper.Map<IEnumerable<Incident>, IEnumerable<ResponseIncidentDto>>(incidents));
             return response;
         }
 

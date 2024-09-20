@@ -98,7 +98,7 @@ namespace IncidentAlert.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> Add([FromBody] IncidentDto incidentDto)
+        public async Task<IActionResult> Add([FromForm] IncidentDto incidentDto)
         {
             if (incidentDto == null || !ModelState.IsValid)
                 return BadRequest(ModelState);
