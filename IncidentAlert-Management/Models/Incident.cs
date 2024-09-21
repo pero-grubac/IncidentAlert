@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using IncidentAlert_Management.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IncidentAlert.Models
@@ -23,6 +24,9 @@ namespace IncidentAlert.Models
         [ForeignKey("LocationId")]
         public int LocationId { get; set; }
         public Location? Location { get; set; }
+
+        [Required]
+        public StatusEnum Status { get; set; }
 
         public ICollection<IncidentCategory> IncidentCategories { get; set; } = new List<IncidentCategory>();
         public ICollection<Image> Images { get; set; } = new List<Image>();

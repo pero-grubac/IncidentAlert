@@ -1,6 +1,6 @@
 ﻿namespace IncidentAlert_Management.Models
 {
-    public enum Status
+    public enum StatusEnum
     {
         ACCEPTED,
         REJECTED,

@@ -1,4 +1,6 @@
-﻿namespace IncidentAlert.Models.Dto
+﻿using IncidentAlert_Management.Models;
+
+namespace IncidentAlert.Models.Dto
 {
     public class IncidentDto
     {
@@ -8,6 +10,7 @@
         public string Title { get; set; } = string.Empty;
 
         public DateTime DateTime { get; set; }
+        public StatusEnum Status { get; set; }
 
         public LocationDto Location { get; set; } = null!;
         public ICollection<string> Categories { get; set; } = [];
