@@ -85,11 +85,19 @@ namespace IncidentAlert.Services.Implementation
             var request = _httpContextAccessor.HttpContext?.Request;
             var baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}";
 
-            var imagePaths = images?
-                .Select(image => $"{baseUrl}/{image.FilePath.TrimStart('/')}")
-                .ToList() ?? new List<string>();
+            var imageUrls = images.Select(image =>
+            {
+                // Generišemo relativni URL put do slike
+                var relativePath = image.FilePath.TrimStart('/');
 
-            return imagePaths;
+                // Kombinujemo sa osnovnim URL-om aplikacije
+                var url = $"{request.Scheme}://{request.Host}/{relativePath}";
+
+                // Enkodujemo URL da bi specijalni karakteri bili validni
+                return Uri.EscapeUriString(url);  // EscapeUriString enkoduje specijalne karaktere
+            }).ToList();
+
+            return imageUrls;
         }
     }
 }
