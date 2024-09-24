@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IncidentAlert_Management.Controllers
 {
+    [ApiController]
+    [Route("[controller]")]
     public class LocationController(ILocationService locationService) : ControllerBase
     {
         private readonly ILocationService _service = locationService;
