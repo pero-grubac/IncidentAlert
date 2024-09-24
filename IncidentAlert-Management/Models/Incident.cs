@@ -26,7 +26,7 @@ namespace IncidentAlert.Models
         public Location? Location { get; set; }
 
         [Required]
-        public StatusEnum Status { get; set; }
+        public StatusEnum Status { get; set; } = StatusEnum.PENDING;
 
         public ICollection<IncidentCategory> IncidentCategories { get; set; } = new List<IncidentCategory>();
         public ICollection<Image> Images { get; set; } = new List<Image>();
