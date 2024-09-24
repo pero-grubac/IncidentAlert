@@ -1,5 +1,4 @@
-﻿using IncidentAlert.Models;
-using IncidentAlert_Management.Models;
+﻿using IncidentAlert_Management.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
