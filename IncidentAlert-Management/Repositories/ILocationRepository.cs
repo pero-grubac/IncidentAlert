@@ -1,7 +1,7 @@
-﻿using IncidentAlert.Models;
+﻿using IncidentAlert_Management.Models;
 using System.Linq.Expressions;
 
-namespace IncidentAlert.Repositories
+namespace IncidentAlert_Management.Repositories
 {
     public interface ILocationRepository
     {

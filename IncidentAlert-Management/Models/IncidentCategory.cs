@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace IncidentAlert.Models
+namespace IncidentAlert_Management.Models
 {
     [Table("incident_category")]
     public class IncidentCategory

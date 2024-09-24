@@ -1,7 +1,7 @@
 ﻿
-using IncidentAlert.Models;
+using IncidentAlert_Management.Models;
 
-namespace IncidentAlert.Repositories
+namespace IncidentAlert_Management.Repositories
 {
     public interface IImageRepository
     {

@@ -1,4 +1,4 @@
-﻿namespace IncidentAlert.Models.Dto
+﻿namespace IncidentAlert_Management.Models.Dto
 {
     public class CategoryDto
     {

@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace IncidentAlert.Models
+namespace IncidentAlert_Management.Models
 {
     [Table("location")]
     [Index(nameof(Name), IsUnique = true)]

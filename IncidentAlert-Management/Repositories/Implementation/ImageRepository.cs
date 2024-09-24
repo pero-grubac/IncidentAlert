@@ -1,8 +1,8 @@
-﻿using IncidentAlert.Data;
-using IncidentAlert.Models;
+﻿using IncidentAlert_Management.Data;
+using IncidentAlert_Management.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace IncidentAlert.Repositories.Implementation
+namespace IncidentAlert_Management.Repositories.Implementation
 {
     public class ImageRepository(DataContext dataContext) : IImageRepository
     {

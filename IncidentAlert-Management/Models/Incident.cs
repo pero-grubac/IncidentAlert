@@ -1,8 +1,7 @@
-﻿using IncidentAlert_Management.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace IncidentAlert.Models
+namespace IncidentAlert_Management.Models
 {
     [Table("incident")]
     public class Incident

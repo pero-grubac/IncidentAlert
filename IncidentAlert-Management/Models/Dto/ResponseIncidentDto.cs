@@ -1,6 +1,4 @@
-﻿using IncidentAlert_Management.Models;
-
-namespace IncidentAlert.Models.Dto
+﻿namespace IncidentAlert_Management.Models.Dto
 {
     public class ResponseIncidentDto
     {

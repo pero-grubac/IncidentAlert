@@ -1,9 +1,9 @@
-﻿using IncidentAlert.Data;
-using IncidentAlert.Models;
+﻿using IncidentAlert_Management.Data;
+using IncidentAlert_Management.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace IncidentAlert.Repositories.Implementation
+namespace IncidentAlert_Management.Repositories.Implementation
 {
     public class CategoryRepository(DataContext dataContext) : ICategoryRepository
     {
