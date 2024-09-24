@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
-using IncidentAlert.Exceptions;
-using IncidentAlert.Models;
-using IncidentAlert.Models.Dto;
-using IncidentAlert.Repositories;
-using IncidentAlert.Util;
+using IncidentAlert_Management.Exceptions;
+using IncidentAlert_Management.Models;
+using IncidentAlert_Management.Models.Dto;
+using IncidentAlert_Management.Repositories;
+using IncidentAlert_Management.Util;
 using System.Linq.Expressions;
 
-namespace IncidentAlert.Services.Implementation
+namespace IncidentAlert_Management.Services.Implementation
 {
     public class CategoryService(IMapper mapper, ICategoryRepository categoryRepository) : ICategoryService
     {

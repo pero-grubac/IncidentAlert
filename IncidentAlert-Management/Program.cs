@@ -1,6 +1,10 @@
 using IncidentAlert_Management.Data;
 using IncidentAlert_Management.JWT;
 using IncidentAlert_Management.Models;
+using IncidentAlert_Management.Repositories;
+using IncidentAlert_Management.Repositories.Implementation;
+using IncidentAlert_Management.Services;
+using IncidentAlert_Management.Services.Implementation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -86,6 +90,25 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// Model mapper
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+// Repository
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ILocationRepository, LocationRepository>();
+builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
+builder.Services.AddScoped<IIncidentCategoryRepository, IncidentCategoryRepository>();
+builder.Services.AddScoped<IImageRepository, ImageRepository>();
+
+// Service
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddScoped<IIncidentService, IncidentService>();
+builder.Services.AddScoped<IImageService, ImageService>();
+
+// HttpContext
+builder.Services.AddHttpContextAccessor();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -96,8 +119,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowSpecificOrigin");
 
-//app.UseAuthorization();
+// Use static files
+app.UseStaticFiles();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

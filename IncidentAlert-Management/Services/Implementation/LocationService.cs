@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using IncidentAlert.Exceptions;
-using IncidentAlert.Models;
-using IncidentAlert.Models.Dto;
-using IncidentAlert.Repositories;
+using IncidentAlert_Management.Exceptions;
+using IncidentAlert_Management.Models;
+using IncidentAlert_Management.Models.Dto;
+using IncidentAlert_Management.Repositories;
 
-namespace IncidentAlert.Services.Implementation
+namespace IncidentAlert_Management.Services.Implementation
 {
     public class LocationService(IMapper mapper, ILocationRepository locationRepository) : ILocationService
     {

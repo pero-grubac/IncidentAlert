@@ -1,8 +1,8 @@
-﻿using IncidentAlert.Exceptions;
-using IncidentAlert.Models;
-using IncidentAlert.Repositories;
+﻿using IncidentAlert_Management.Exceptions;
+using IncidentAlert_Management.Models;
+using IncidentAlert_Management.Repositories;
 
-namespace IncidentAlert.Services.Implementation
+namespace IncidentAlert_Management.Services.Implementation
 {
     public class ImageService(IWebHostEnvironment environment, IImageRepository imageRepository,
         IIncidentRepository incidentRepository, IHttpContextAccessor httpContextAccessor) : IImageService
