@@ -1,11 +1,14 @@
 ﻿using IncidentAlert_Management.Models.Dto;
 using IncidentAlert_Management.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IncidentAlert_Management.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize(Roles = "MODERATOR")]
+
     public class CategoryController(ICategoryService categoryService) : ControllerBase
     {
         private readonly ICategoryService _service = categoryService;
