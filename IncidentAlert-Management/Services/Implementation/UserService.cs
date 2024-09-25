@@ -14,7 +14,7 @@ namespace IncidentAlert_Management.Services.Implementation
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly IJwtService _jwtService = jwtService;
         private readonly IUserRepository _userRepository = userRepository;
-        public async Task Add(UserDto user)
+        public async Task Add(CreateUserDto user)
         {
             var userdto = await _userManager.FindByNameAsync(user.Username);
             if (userdto != null)

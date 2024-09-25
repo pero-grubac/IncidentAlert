@@ -14,7 +14,7 @@ namespace IncidentAlert_Management.Controllers
         [HttpPost("register")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> Create([FromBody] UserDto newUser)
+        public async Task<IActionResult> Create([FromBody] CreateUserDto newUser)
         {
             if (newUser == null || !ModelState.IsValid)
                 return BadRequest(ModelState);
