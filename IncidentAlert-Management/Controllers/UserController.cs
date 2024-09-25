@@ -26,7 +26,7 @@ namespace IncidentAlert_Management.Controllers
         [HttpPost("login")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> Login([FromBody] UserDto user)
+        public async Task<IActionResult> Login([FromBody] LoginDto user)
         {
             if (user == null || !ModelState.IsValid)
                 return BadRequest(ModelState);

@@ -6,6 +6,6 @@ namespace IncidentAlert_Management.Services
     {
         Task<IEnumerable<UserDto>> GetAll();
         Task Add(CreateUserDto user);
-        Task<string> Login(UserDto loginUser);
+        Task<string> Login(LoginDto loginUser);
     }
 }

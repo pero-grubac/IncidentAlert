@@ -40,7 +40,7 @@ namespace IncidentAlert_Management.Services.Implementation
             return _mapper.Map<IEnumerable<ApplicationUser>, IEnumerable<UserDto>>(await _userRepository.GetAll());
         }
 
-        public async Task<string> Login(UserDto loginUser)
+        public async Task<string> Login(LoginDto loginUser)
         {
             var user = await _userManager.FindByNameAsync(loginUser.Username);
             if (user == null)
