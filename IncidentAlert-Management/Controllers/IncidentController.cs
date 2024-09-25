@@ -1,11 +1,13 @@
 ﻿using IncidentAlert_Management.Models.Dto;
 using IncidentAlert_Management.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IncidentAlert_Management.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize(Roles = "MODERATOR")]
     public class IncidentController(IIncidentService incidentService) : ControllerBase
     {
         private readonly IIncidentService _service = incidentService;
@@ -94,7 +96,7 @@ namespace IncidentAlert_Management.Controllers
 
             return Ok(incidents);
         }
-
+        //TREBABACE endpoint  izmjeniti tako da koristik moze da ga kreira
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
