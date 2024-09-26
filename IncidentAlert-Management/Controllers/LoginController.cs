@@ -5,28 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IncidentAlert_Management.Controllers
 {
-    [Route("users")]
+    [Route("login")]
     [ApiController]
-    [Authorize(Roles = "ADMIN")]
-
-    public class UserController(IUserService userService) : ControllerBase
+    public class LoginController(IUserService userService) : ControllerBase
     {
         private readonly IUserService _userService = userService;
 
-        [HttpPost("register")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        [AllowAnonymous]
-        public async Task<IActionResult> Create([FromBody] CreateUserDto newUser)
-        {
-            if (newUser == null || !ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            await _userService.Add(newUser);
-            return Ok("Succesfully created");
-        }
-
-        [HttpPost("login")]
+        [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [AllowAnonymous]
@@ -37,6 +22,5 @@ namespace IncidentAlert_Management.Controllers
             var jwt = await _userService.Login(user);
             return Ok(jwt);
         }
-        //TODO getall,approve,delete
     }
 }
