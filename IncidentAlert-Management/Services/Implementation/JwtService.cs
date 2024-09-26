@@ -16,7 +16,7 @@ namespace IncidentAlert_Management.Services.Implementation
             var claims = new[]
                 {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                new Claim(ClaimTypes.Role, user.Role.ToString()),
+                new Claim("role", user.Role.ToString()),
 
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString(), ClaimValueTypes.Integer64)
                 };

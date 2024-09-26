@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IncidentAlert_Management.Controllers
 {
-    [Route("login")]
+    [Route("[controller]")]
     [ApiController]
     public class LoginController(IUserService userService) : ControllerBase
     {

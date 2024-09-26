@@ -1,19 +1,18 @@
 ﻿using IncidentAlert_Management.Models.Dto;
 using IncidentAlert_Management.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IncidentAlert_Management.Controllers
 {
-    [Route("register")]
+    [Route("[controller]")]
     [ApiController]
     public class RegisterController(IUserService userService) : ControllerBase
     {
         private readonly IUserService _userService = userService;
 
+        [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        [AllowAnonymous]
         public async Task<IActionResult> Create([FromBody] CreateUserDto newUser)
         {
             if (newUser == null || !ModelState.IsValid)
