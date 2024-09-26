@@ -22,5 +22,15 @@ namespace IncidentAlert_Management.Controllers
             var jwt = await _userService.Login(user);
             return Ok(jwt);
         }
+
+        [HttpPost("oauth")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginOAuth([FromBody] LoginDto user)
+        {
+            //TODO
+            return Ok();
+        }
     }
 }
