@@ -3,6 +3,7 @@
     public enum RoleEnum
     {
         ADMIN,
-        MODERATOR
+        MODERATOR,
+        NOTITLE
     }
 }

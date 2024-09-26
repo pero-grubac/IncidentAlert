@@ -24,7 +24,7 @@ namespace IncidentAlert_Management.Services.Implementation
             {
                 UserName = user.Username,
                 Email = user.Email,
-                Role = RoleEnum.MODERATOR,
+                Role = RoleEnum.NOTITLE,
             };
             var result = await _userManager.CreateAsync(newUser, user.Password);
 
@@ -44,6 +44,9 @@ namespace IncidentAlert_Management.Services.Implementation
         {
             var user = await _userManager.FindByNameAsync(loginUser.Username);
             if (user == null)
+                throw new EntityCanNotBeCreatedException("Invalid username or password.");
+
+            if (user.Role == RoleEnum.NOTITLE)
                 throw new EntityCanNotBeCreatedException("Invalid username or password.");
 
             var result = await _userManager.CheckPasswordAsync(user, loginUser.Password);
