@@ -126,6 +126,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Middleware for COOP and COEP Headers
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("Cross-Origin-Opener-Policy", "same-origin");
+    context.Response.Headers.Add("Cross-Origin-Embedder-Policy", "require-corp");
+    await next();
+});
 app.UseCors("AllowSpecificOrigin");
 
 // Use static files
