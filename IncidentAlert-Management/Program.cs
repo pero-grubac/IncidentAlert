@@ -1,10 +1,12 @@
-using IncidentAlert_Management.Data;
+﻿using IncidentAlert_Management.Data;
 using IncidentAlert_Management.JWT;
 using IncidentAlert_Management.Models;
+using IncidentAlert_Management.Models.Dto;
 using IncidentAlert_Management.Repositories;
 using IncidentAlert_Management.Repositories.Implementation;
 using IncidentAlert_Management.Services;
 using IncidentAlert_Management.Services.Implementation;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -72,10 +74,22 @@ var jwtSettingsSection = builder.Configuration.GetSection("JwtSettings");
 var jwtSettings = jwtSettingsSection.Get<JwtSettings>();
 builder.Services.AddSingleton(jwtSettings);
 
+var googleSettingsSection = builder.Configuration.GetSection("GoogleSettings");
+var googleSettings = googleSettingsSection.Get<GoogleSettings>();
+builder.Services.AddSingleton(googleSettings);
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+.AddGoogle(options =>
+{
+    options.ClientId = googleSettings.ClientId;
+    options.ClientSecret = googleSettings.ClientSecret;
+    options.Scope.Add("profile");
+    options.Scope.Add("email");
+    options.Scope.Add("openid");
 })
 .AddJwtBearer(options =>
 {

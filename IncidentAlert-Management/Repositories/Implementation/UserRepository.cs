@@ -38,6 +38,12 @@ namespace IncidentAlert_Management.Repositories.Implementation
         public async Task<IEnumerable<ApplicationUser>> GetAll()
              => await _dataContext.Users.ToListAsync();
 
+        public async Task<ApplicationUser?> GetByEmail(string email)
+            => await Find(e => e.Email == email);
+
+        public async Task<ApplicationUser?> GetByGoogleId(string googleId)
+            => await Find(e => e.GoogleId == googleId);
+
         public async Task<ApplicationUser?> GetById(string id)
             => await Find(e => e.Id == id);
 

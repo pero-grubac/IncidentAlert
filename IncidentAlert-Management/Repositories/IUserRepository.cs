@@ -8,6 +8,11 @@ namespace IncidentAlert_Management.Repositories
         Task<IEnumerable<ApplicationUser>> GetAll();
         Task<ApplicationUser?> GetByUsername(string username);
         Task<ApplicationUser?> GetById(string id);
+        Task<ApplicationUser?> GetByGoogleId(string googleId);
+
+        Task<ApplicationUser?> GetByEmail(string email);
+
+
         Task Add(ApplicationUser user);
         Task Update(ApplicationUser user);
         Task DeleteByUsername(string username);
