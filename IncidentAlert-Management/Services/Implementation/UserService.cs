@@ -8,12 +8,14 @@ using Microsoft.AspNetCore.Identity;
 namespace IncidentAlert_Management.Services.Implementation
 {
     public class UserService(IMapper mapper, UserManager<ApplicationUser> userManager,
-                            IJwtService jwtService, IUserRepository userRepository) : IUserService
+                            IJwtService jwtService, IUserRepository userRepository,
+                            ICustomPasswordService customPasswordService) : IUserService
     {
         private readonly IMapper _mapper = mapper;
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly IJwtService _jwtService = jwtService;
         private readonly IUserRepository _userRepository = userRepository;
+        private readonly ICustomPasswordService _customPasswordService = customPasswordService;
         public async Task Add(CreateUserDto user)
         {
             var userdto = await _userManager.FindByNameAsync(user.Username);
@@ -55,7 +57,7 @@ namespace IncidentAlert_Management.Services.Implementation
             return _jwtService.GenerateJwtToken(user);
         }
 
-        public async Task<string?> OAuth(OAuth oauth)
+        public async Task<(OAuthResult result, string token)> OAuth(OAuth oauth)
         {
             // u servisu vidi da li postoji korisnik sa tim googleid
             // ako ne postoji vidi da li postoji sa tim imenom, ako postoji dodaj random broj vidi da li postoji,...
@@ -68,10 +70,15 @@ namespace IncidentAlert_Management.Services.Implementation
                 {
                     Email = oauth.Email,
                     Username = oauth.Username,
-                    Password =
-                }
+                    Password = _customPasswordService.GenerateRandomPassword()
+                };
+                await Add(newUser);
+                return (OAuthResult.Created, string.Empty);
             }
-            return null;
+            else
+            {
+                return (OAuthResult.Created, string.Empty);
+            }
         }
     }
 }

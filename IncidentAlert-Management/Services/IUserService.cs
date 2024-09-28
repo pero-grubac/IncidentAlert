@@ -1,4 +1,5 @@
-﻿using IncidentAlert_Management.Models.Dto;
+﻿using IncidentAlert_Management.Models;
+using IncidentAlert_Management.Models.Dto;
 
 namespace IncidentAlert_Management.Services
 {
@@ -7,6 +8,6 @@ namespace IncidentAlert_Management.Services
         Task<IEnumerable<UserDto>> GetAll();
         Task Add(CreateUserDto user);
         Task<string> Login(LoginDto loginUser);
-        Task<string?> OAuth(OAuth oauth);
+        Task<(OAuthResult result, string token)> OAuth(OAuth oauth);
     }
 }

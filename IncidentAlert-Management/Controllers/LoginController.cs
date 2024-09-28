@@ -1,4 +1,5 @@
-﻿using IncidentAlert_Management.Models.Dto;
+﻿using IncidentAlert_Management.Models;
+using IncidentAlert_Management.Models.Dto;
 using IncidentAlert_Management.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -61,15 +62,16 @@ namespace IncidentAlert_Management.Controllers
                 Email = email!,
                 Username = fullName!
             };
-            var result = await _userService.OAuth(oauth);
+            var (result, token) = await _userService.OAuth(oauth);
 
-            //created
-            if (result == "Created")
-                return Created();
-
-
-            // login
-            return Ok(result);
+            if (result == OAuthResult.Created)
+            {
+                return Created(); // Kreiran novi korisnik
+            }
+            if (result == OAuthResult.LoggedIn)
+            {
+                return Ok(token); // Vraća JWT za postojeći korisnik
+            }
         }
     }
 }
