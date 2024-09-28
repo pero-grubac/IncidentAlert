@@ -68,10 +68,15 @@ namespace IncidentAlert_Management.Controllers
             {
                 return Created(); // Kreiran novi korisnik
             }
-            if (result == OAuthResult.LoggedIn)
+            else if (result == OAuthResult.Failed)
+            {
+                return BadRequest();
+            }
+            else if (result == OAuthResult.LoggedIn)
             {
                 return Ok(token); // Vraća JWT za postojeći korisnik
             }
+            return BadRequest();
         }
     }
 }

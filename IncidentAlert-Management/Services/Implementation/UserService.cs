@@ -59,26 +59,83 @@ namespace IncidentAlert_Management.Services.Implementation
 
         public async Task<(OAuthResult result, string token)> OAuth(OAuth oauth)
         {
-            // u servisu vidi da li postoji korisnik sa tim googleid
-            // ako ne postoji vidi da li postoji sa tim imenom, ako postoji dodaj random broj vidi da li postoji,...
-            // kreiraj korisnika
-            // ili loguj korisnika
-            var user = await _userRepository.GetByGoogleId(oauth.GoogleId);
-            if (user == null)
+            var existingUserByGoogleId = await _userRepository.GetByGoogleId(oauth.GoogleId);
+            if (existingUserByGoogleId != null)
             {
-                var newUser = new CreateUserDto
-                {
-                    Email = oauth.Email,
-                    Username = oauth.Username,
-                    Password = _customPasswordService.GenerateRandomPassword()
-                };
-                await Add(newUser);
-                return (OAuthResult.Created, string.Empty);
+                return HandleExistingUserLogin(existingUserByGoogleId);
             }
-            else
+
+            var existingUserByEmail = await _userRepository.GetByEmail(oauth.Email);
+            if (existingUserByEmail != null)
             {
-                return (OAuthResult.Created, string.Empty);
+                return await HandleExistingUserWithEmail(existingUserByEmail, oauth);
             }
+
+            var username = await GenerateUniqueUsername(oauth.Username);
+            var newUser = new ApplicationUser
+            {
+                Email = oauth.Email,
+                UserName = username,
+                Role = RoleEnum.NOTITLE,
+                GoogleId = oauth.GoogleId,
+            };
+            var password = _customPasswordService.GenerateRandomPassword();
+            var result = await _userManager.CreateAsync(newUser, password);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new EntityCanNotBeCreatedException($"Failed to create user: {errors}");
+            }
+
+            return (OAuthResult.Created, string.Empty);
+        }
+
+        private async Task<string> GenerateUniqueUsername(string baseUsername)
+        {
+            var userByUsername = await _userRepository.GetByUsername(baseUsername);
+            if (userByUsername == null)
+            {
+                return baseUsername;
+            }
+
+            Random random = new();
+            string newUsername;
+            do
+            {
+                newUsername = baseUsername + random.Next(1, 10000); // Dodaj random broj da bi username bio jedinstven
+            } while (await _userRepository.GetByUsername(newUsername) != null);
+
+            return newUsername;
+        }
+
+        private async Task<(OAuthResult result, string token)> HandleExistingUserWithEmail(ApplicationUser user, OAuth oauth)
+        {
+            user.GoogleId = oauth.GoogleId;
+            await _userRepository.Update(user);
+
+            var loginDto = new LoginDto
+            {
+                Username = user.UserName!,
+                Password = user.PasswordHash!
+            };
+
+            var isLoginSuccessful = await _userRepository.CustomLogin(loginDto);
+            if (isLoginSuccessful)
+            {
+                var token = _jwtService.GenerateJwtToken(user);
+                return (OAuthResult.LoggedIn, token);
+            }
+
+            return (OAuthResult.Failed, string.Empty);
+        }
+
+        private (OAuthResult result, string token) HandleExistingUserLogin(ApplicationUser user)
+        {
+            if (user.Role == RoleEnum.NOTITLE)
+                throw new EntityCanNotBeCreatedException("Invalid username or password.");
+
+            var token = _jwtService.GenerateJwtToken(user);
+            return (OAuthResult.LoggedIn, token);
         }
     }
 }
