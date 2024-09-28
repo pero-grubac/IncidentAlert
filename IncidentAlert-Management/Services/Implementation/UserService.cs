@@ -55,6 +55,23 @@ namespace IncidentAlert_Management.Services.Implementation
             return _jwtService.GenerateJwtToken(user);
         }
 
-
+        public async Task<string?> OAuth(OAuth oauth)
+        {
+            // u servisu vidi da li postoji korisnik sa tim googleid
+            // ako ne postoji vidi da li postoji sa tim imenom, ako postoji dodaj random broj vidi da li postoji,...
+            // kreiraj korisnika
+            // ili loguj korisnika
+            var user = await _userRepository.GetByGoogleId(oauth.GoogleId);
+            if (user == null)
+            {
+                var newUser = new CreateUserDto
+                {
+                    Email = oauth.Email,
+                    Username = oauth.Username,
+                    Password =
+                }
+            }
+            return null;
+        }
     }
 }

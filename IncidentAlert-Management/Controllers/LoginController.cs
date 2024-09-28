@@ -49,14 +49,27 @@ namespace IncidentAlert_Management.Controllers
                 .FirstOrDefault()?.Claims;
 
             var email = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-            var googleId = claims?.FirstOrDefault(c => c.Type == "sub")?.Value; // Google ID
+            var googleId = claims?.FirstOrDefault(c => c.Type == "sub")?.Value;
             var fullName = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
-            // u servisu vidi da li postoji korisnik sa tim googleid
-            // ako ne postoji vidi da li postoji sa tim imenom, ako postoji dodaj random broj vidi da li postoji,...
-            // kreiraj korisnika
-            // ili loguj korisnika
-            return Ok();
+            if (email == string.Empty || googleId == string.Empty || fullName == string.Empty)
+                return BadRequest();
+
+            var oauth = new OAuth
+            {
+                GoogleId = googleId!,
+                Email = email!,
+                Username = fullName!
+            };
+            var result = await _userService.OAuth(oauth);
+
+            //created
+            if (result == "Created")
+                return Created();
+
+
+            // login
+            return Ok(result);
         }
     }
 }

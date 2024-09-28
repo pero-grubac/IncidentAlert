@@ -126,6 +126,7 @@ builder.Services.AddScoped<IIncidentService, IncidentService>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<ICustomPasswordService, CustomPasswordService>();
 
 // HttpContext
 builder.Services.AddHttpContextAccessor();
