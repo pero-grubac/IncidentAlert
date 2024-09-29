@@ -1,11 +1,9 @@
 ﻿using IncidentAlert_Management.Models;
 using IncidentAlert_Management.Models.Dto;
 using IncidentAlert_Management.Services;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace IncidentAlert_Management.Controllers
 {
@@ -26,57 +24,40 @@ namespace IncidentAlert_Management.Controllers
             var jwt = await _userService.Login(user);
             return Ok(jwt);
         }
-        [HttpGet("login-google")]
-        public IActionResult LoginWithGoogle()
-        {
-            var redirectUrl = Url.Action(nameof(LoginOAuth), "Login");
-            var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
-            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
-        }
+
 
         [HttpPost("oauth")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [AllowAnonymous]
-        public async Task<IActionResult> LoginOAuth()
+        public async Task<IActionResult> LoginOAuth([FromBody] OAuth data)
         {
-            var authenticateResult = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
 
-            if (!authenticateResult.Succeeded)
-                return BadRequest(); // Autentifikacija nije uspela
+            var username = Regex.Replace(data.Username!, @"[^a-zA-Z0-9]", "");
 
-            // Dobijanje informacija o korisniku
-            var claims = authenticateResult.Principal.Identities
-                .FirstOrDefault()?.Claims;
-
-            var email = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-            var googleId = claims?.FirstOrDefault(c => c.Type == "sub")?.Value;
-            var fullName = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
-
-            if (email == string.Empty || googleId == string.Empty || fullName == string.Empty)
+            if (string.IsNullOrWhiteSpace(data.Email) || string.IsNullOrWhiteSpace(data.GoogleId)
+                        || string.IsNullOrWhiteSpace(username))
                 return BadRequest();
+
+            if (!data.Email.EndsWith("@student.etf.unibl.org"))
+                return BadRequest("Email domain not allowed.");
+
 
             var oauth = new OAuth
             {
-                GoogleId = googleId!,
-                Email = email!,
-                Username = fullName!
+                GoogleId = data.GoogleId!,
+                Email = data.Email!,
+                Username = username!
             };
             var (result, token) = await _userService.OAuth(oauth);
 
-            if (result == OAuthResult.Created)
+            return result switch
             {
-                return Created(); // Kreiran novi korisnik
-            }
-            else if (result == OAuthResult.Failed)
-            {
-                return BadRequest();
-            }
-            else if (result == OAuthResult.LoggedIn)
-            {
-                return Ok(token); // Vraća JWT za postojeći korisnik
-            }
-            return BadRequest();
+                OAuthResult.Created => CreatedAtAction(nameof(LoginOAuth), new { /* include relevant info */ }),
+                OAuthResult.Failed => BadRequest("OAuth failed. Please try again."),
+                OAuthResult.LoggedIn => Ok(token), // Return JWT for existing user
+                _ => BadRequest("Unknown error occurred.")
+            };
         }
     }
 }

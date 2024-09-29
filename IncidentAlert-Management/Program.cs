@@ -59,7 +59,10 @@ builder.Services.AddCors(options =>
         {
             builder.WithOrigins(frontendUrl)
                    .AllowAnyMethod()
-                   .AllowAnyHeader();
+                   .AllowAnyHeader()
+                   .AllowCredentials()
+                  ;
+
         });
 });
 
@@ -82,14 +85,6 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-})
-.AddGoogle(options =>
-{
-    options.ClientId = googleSettings.ClientId;
-    options.ClientSecret = googleSettings.ClientSecret;
-    options.Scope.Add("profile");
-    options.Scope.Add("email");
-    options.Scope.Add("openid");
 })
 .AddJwtBearer(options =>
 {
@@ -131,6 +126,7 @@ builder.Services.AddScoped<ICustomPasswordService, CustomPasswordService>();
 // HttpContext
 builder.Services.AddHttpContextAccessor();
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -142,17 +138,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Middleware for COOP and COEP Headers
-app.Use(async (context, next) =>
-{
-    context.Response.Headers.Add("Cross-Origin-Opener-Policy", "same-origin");
-    context.Response.Headers.Add("Cross-Origin-Embedder-Policy", "require-corp");
-    await next();
-});
-app.UseCors("AllowSpecificOrigin");
-
 // Use static files
 app.UseStaticFiles();
+
+app.UseCors("AllowSpecificOrigin");
 
 app.UseAuthentication();
 app.UseAuthorization();

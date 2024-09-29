@@ -1,5 +1,4 @@
 ﻿using IncidentAlert_Management.Models;
-using IncidentAlert_Management.Models.Dto;
 using System.Linq.Expressions;
 
 namespace IncidentAlert_Management.Repositories
@@ -21,6 +20,5 @@ namespace IncidentAlert_Management.Repositories
         Task<bool> Exists(Expression<Func<ApplicationUser, bool>> predicate);
         Task<IEnumerable<ApplicationUser>> FindAll(Expression<Func<ApplicationUser, bool>> predicate);
         Task<ApplicationUser?> Find(Expression<Func<ApplicationUser, bool>> predicate);
-        Task<bool> CustomLogin(LoginDto loginUser);
     }
 }

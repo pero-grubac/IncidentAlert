@@ -32,8 +32,7 @@ namespace IncidentAlert_Management.Services.Implementation
 
             if (!result.Succeeded)
             {
-                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                throw new EntityCanNotBeCreatedException($"Failed to create user: {errors}");
+                throw new EntityCanNotBeCreatedException($"Failed to create user: {user.Username}");
             }
         }
 
@@ -83,8 +82,7 @@ namespace IncidentAlert_Management.Services.Implementation
             var result = await _userManager.CreateAsync(newUser, password);
             if (!result.Succeeded)
             {
-                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                throw new EntityCanNotBeCreatedException($"Failed to create user: {errors}");
+                throw new EntityCanNotBeCreatedException($"Failed to create user: {username}");
             }
 
             return (OAuthResult.Created, string.Empty);
@@ -113,13 +111,10 @@ namespace IncidentAlert_Management.Services.Implementation
             user.GoogleId = oauth.GoogleId;
             await _userRepository.Update(user);
 
-            var loginDto = new LoginDto
-            {
-                Username = user.UserName!,
-                Password = user.PasswordHash!
-            };
 
-            var isLoginSuccessful = await _userRepository.CustomLogin(loginDto);
+
+            var isLoginSuccessful = await _userRepository.Exists(u => u.UserName == user.UserName!
+                    && u.PasswordHash == user.PasswordHash!);
             if (isLoginSuccessful)
             {
                 var token = _jwtService.GenerateJwtToken(user);
@@ -129,10 +124,12 @@ namespace IncidentAlert_Management.Services.Implementation
             return (OAuthResult.Failed, string.Empty);
         }
 
+
+
         private (OAuthResult result, string token) HandleExistingUserLogin(ApplicationUser user)
         {
             if (user.Role == RoleEnum.NOTITLE)
-                throw new EntityCanNotBeCreatedException("Invalid username or password.");
+                throw new EntityDoesNotExistException("Invalid username or password.");
 
             var token = _jwtService.GenerateJwtToken(user);
             return (OAuthResult.LoggedIn, token);
