@@ -13,6 +13,7 @@ namespace IncidentAlert_Management.Controllers
     {
         private readonly ICategoryService _service = categoryService;
 
+        [Authorize(Roles = "MODERATOR")]
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<CategoryDto>))]
         public async Task<IActionResult> GetAll()
@@ -25,6 +26,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(categories);
         }
 
+        [Authorize(Roles = "MODERATOR")]
         [HttpGet("{id:int}")]
         [ProducesResponseType(200, Type = typeof(CategoryDto))]
         [ProducesResponseType(400)]
@@ -38,6 +40,7 @@ namespace IncidentAlert_Management.Controllers
 
         }
 
+        [Authorize(Roles = "MODERATOR")]
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -52,6 +55,7 @@ namespace IncidentAlert_Management.Controllers
 
         }
 
+        [Authorize(Roles = "MODERATOR")]
         [HttpPut("{id:int}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -66,6 +70,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(category);
         }
 
+        [Authorize(Roles = "MODERATOR")]
         [HttpDelete("{id:int}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
