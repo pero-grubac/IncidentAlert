@@ -4,6 +4,7 @@
     {
         ADMIN,
         MODERATOR,
-        NOTITLE
+        NOTITLE,
+        UNKNOWN,
     }
 }

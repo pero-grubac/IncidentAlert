@@ -11,7 +11,7 @@ namespace IncidentAlert_Management.Repositories
         Task<ApplicationUser?> GetByGoogleId(string googleId);
 
         Task<ApplicationUser?> GetByEmail(string email);
-
+        Task<RoleEnum> GetRoleByUsername(string username);
 
         Task Add(ApplicationUser user);
         Task Update(ApplicationUser user);

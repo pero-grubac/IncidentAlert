@@ -7,7 +7,6 @@ namespace IncidentAlert_Management.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize(Roles = "MODERATOR")]
 
     public class CategoryController(ICategoryService categoryService) : ControllerBase
     {

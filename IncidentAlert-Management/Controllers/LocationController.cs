@@ -11,7 +11,7 @@ namespace IncidentAlert_Management.Controllers
     public class LocationController(ILocationService locationService) : ControllerBase
     {
         private readonly ILocationService _service = locationService;
-
+        [Authorize(Roles = "MODERATOR")]
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<LocationDto>))]
         public async Task<IActionResult> GetAll()
@@ -23,7 +23,7 @@ namespace IncidentAlert_Management.Controllers
 
             return Ok(locations);
         }
-
+        [Authorize(Roles = "MODERATOR")]
         [HttpGet("{id:int}")]
         [ProducesResponseType(200, Type = typeof(LocationDto))]
         [ProducesResponseType(400)]
@@ -37,7 +37,7 @@ namespace IncidentAlert_Management.Controllers
 
         }
 
-
+        [Authorize(Roles = "MODERATOR")]
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -51,7 +51,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(location);
         }
 
-
+        [Authorize(Roles = "MODERATOR")]
         [HttpPut("{id:int}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -65,7 +65,7 @@ namespace IncidentAlert_Management.Controllers
 
             return Ok(location);
         }
-
+        [Authorize(Roles = "MODERATOR")]
         [HttpDelete("{id:int}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]

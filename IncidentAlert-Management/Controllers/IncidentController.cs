@@ -7,11 +7,11 @@ namespace IncidentAlert_Management.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize(Roles = "MODERATOR")]
     public class IncidentController(IIncidentService incidentService) : ControllerBase
     {
         private readonly IIncidentService _service = incidentService;
 
+        [Authorize(Roles = "MODERATOR")]
         [HttpGet("getAll")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
         public async Task<IActionResult> GetAll()
@@ -24,7 +24,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(incidents);
         }
 
-
+        [Authorize(Roles = "MODERATOR")]
         [HttpGet("getByCategoryId/{id:int}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
         public async Task<IActionResult> GetByCategeoryId(int id)
@@ -37,6 +37,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(incidents);
         }
 
+        [Authorize(Roles = "MODERATOR")]
         [HttpGet("{id:int}")]
         [ProducesResponseType(200, Type = typeof(IncidentDto))]
         public async Task<IActionResult> GetById(int id)
@@ -49,7 +50,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(incidents);
         }
 
-
+        [Authorize(Roles = "MODERATOR")]
         [HttpGet("GetByCategoryName/{name}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
         public async Task<IActionResult> GetAllByCategoryName(string name)
@@ -62,6 +63,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(incidents);
         }
 
+        [Authorize(Roles = "MODERATOR")]
         [HttpGet("GetAllOnDate/{date:datetime}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
         public async Task<IActionResult> GetAllOnDate(DateTime date)
@@ -74,6 +76,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(incidents);
         }
 
+        [Authorize(Roles = "MODERATOR")]
         [HttpGet("GetAllInDateRange")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
         public async Task<IActionResult> GetAllInDateRange([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
@@ -85,6 +88,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(incidents);
         }
 
+        [Authorize(Roles = "MODERATOR")]
         [HttpGet("GetAllByLocationName/{name}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
         public async Task<IActionResult> GetAllByLocationName(string name)
@@ -110,6 +114,8 @@ namespace IncidentAlert_Management.Controllers
             return Ok();
 
         }
+
+        [Authorize(Roles = "MODERATOR")]
         [HttpPut("{id:int}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -124,6 +130,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(category);
         }
 
+        [Authorize(Roles = "MODERATOR")]
         [HttpDelete("{id:int}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]

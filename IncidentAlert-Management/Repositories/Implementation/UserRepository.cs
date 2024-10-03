@@ -50,6 +50,16 @@ namespace IncidentAlert_Management.Repositories.Implementation
         public async Task<ApplicationUser?> GetByUsername(string username)
             => await Find(e => e.UserName == username);
 
+        public async Task<RoleEnum> GetRoleByUsername(string username)
+        {
+            var user = await GetByUsername(username);
+            if (user is not null)
+            {
+                return user.Role;
+            }
+            return RoleEnum.UNKNOWN;
+        }
+
         public async Task Update(ApplicationUser user)
         {
             _dataContext.Users.Update(user);
