@@ -9,6 +9,7 @@
 
         public DateTime DateTime { get; set; }
         public StatusEnum Status { get; set; }
+        public string StatusName => Status.ToString();
 
         public LocationDto Location { get; set; } = null!;
         public ICollection<CategoryDto> Categories { get; set; } = [];

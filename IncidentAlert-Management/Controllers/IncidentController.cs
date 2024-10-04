@@ -13,7 +13,7 @@ namespace IncidentAlert_Management.Controllers
 
         [Authorize(Roles = "MODERATOR")]
         [HttpGet("getAll")]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<ResponseIncidentDto>))]
         public async Task<IActionResult> GetAll()
         {
             if (!ModelState.IsValid)
@@ -26,7 +26,7 @@ namespace IncidentAlert_Management.Controllers
 
         [Authorize(Roles = "MODERATOR")]
         [HttpGet("getByCategoryId/{id:int}")]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<ResponseIncidentDto>))]
         public async Task<IActionResult> GetByCategeoryId(int id)
         {
             if (!ModelState.IsValid)
@@ -39,7 +39,7 @@ namespace IncidentAlert_Management.Controllers
 
         [Authorize(Roles = "MODERATOR")]
         [HttpGet("{id:int}")]
-        [ProducesResponseType(200, Type = typeof(IncidentDto))]
+        [ProducesResponseType(200, Type = typeof(ResponseIncidentDto))]
         public async Task<IActionResult> GetById(int id)
         {
             if (!ModelState.IsValid)
@@ -52,7 +52,7 @@ namespace IncidentAlert_Management.Controllers
 
         [Authorize(Roles = "MODERATOR")]
         [HttpGet("GetByCategoryName/{name}")]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<ResponseIncidentDto>))]
         public async Task<IActionResult> GetAllByCategoryName(string name)
         {
             if (!ModelState.IsValid)
@@ -65,7 +65,7 @@ namespace IncidentAlert_Management.Controllers
 
         [Authorize(Roles = "MODERATOR")]
         [HttpGet("GetAllOnDate/{date:datetime}")]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<ResponseIncidentDto>))]
         public async Task<IActionResult> GetAllOnDate(DateTime date)
         {
             if (!ModelState.IsValid)
@@ -78,7 +78,7 @@ namespace IncidentAlert_Management.Controllers
 
         [Authorize(Roles = "MODERATOR")]
         [HttpGet("GetAllInDateRange")]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<ResponseIncidentDto>))]
         public async Task<IActionResult> GetAllInDateRange([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
             if (!ModelState.IsValid)
@@ -90,7 +90,7 @@ namespace IncidentAlert_Management.Controllers
 
         [Authorize(Roles = "MODERATOR")]
         [HttpGet("GetAllByLocationName/{name}")]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<ResponseIncidentDto>))]
         public async Task<IActionResult> GetAllByLocationName(string name)
         {
             if (!ModelState.IsValid)

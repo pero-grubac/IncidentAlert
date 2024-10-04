@@ -10,7 +10,8 @@ namespace IncidentAlert_Management.Util
         {
             CreateMap<Category, CategoryDto>().ReverseMap();
             CreateMap<Incident, IncidentDto>()
-                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.IncidentCategories.Select(ic => ic.Category)))
+                .ForMember(dest => dest.Categories,
+                    opt => opt.MapFrom(src => src.IncidentCategories.Select(ic => ic.Category)))
                 .ReverseMap();
             CreateMap<Incident, ResponseIncidentDto>()
                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.IncidentCategories.Select(ic => ic.Category)))
