@@ -179,5 +179,21 @@ namespace IncidentAlert_Management.Services.Implementation
             var incident = await _repository.Update(_mapper.Map<IncidentDto, Incident>(incidentDto));
             return _mapper.Map<Incident, IncidentDto>(incident);
         }
+
+        public async Task<ResponseIncidentDto> ChnageStatus(int id, string status)
+        {
+            if (!Enum.TryParse(typeof(StatusEnum), status, true, out var statusEnumObj)
+                || !Enum.IsDefined(typeof(StatusEnum), statusEnumObj))
+                throw new ArgumentException($"Status '{status}' is not valid.");
+
+            var incident = await _repository.GetById(id) ?? throw new EntityDoesNotExistException($"Incident with id {id} doesnt exist");
+
+            var statusEnum = (StatusEnum)statusEnumObj;
+
+            incident.Status = statusEnum;
+            await _repository.Update(incident);
+
+            return _mapper.Map<Incident, ResponseIncidentDto>(incident);
+        }
     }
 }

@@ -14,6 +14,8 @@ namespace IncidentAlert_Management.Services
         Task<IEnumerable<ResponseIncidentDto>> GetAllOnDate(DateTime date);
         Task<IEnumerable<ResponseIncidentDto>> GetAllInDateRange(DateTime startDate, DateTime endDate);
         Task<IEnumerable<ResponseIncidentDto>> GetAllByLocationName(string locationName);
+        Task<ResponseIncidentDto> ChnageStatus(int id, string status);
+
 
     }
 }

@@ -139,9 +139,23 @@ namespace IncidentAlert_Management.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _service.Delete(id);
+            //  await _service.Delete(id);
 
             return Ok("Succesfully deleted");
+        }
+
+        [Authorize(Roles = "MODERATOR")]
+        [HttpDelete("ChangeStatus/{id:int}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> ChangeStatus(int id, [FromBody] string status)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var incident = await _service.ChnageStatus(id, status);
+
+            return Ok(incident);
         }
     }
 }
