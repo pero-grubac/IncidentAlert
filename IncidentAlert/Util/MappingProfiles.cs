@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Contracts.Category;
+using Contracts.Incident;
+using Contracts.Location;
 using IncidentAlert.Models;
 using IncidentAlert.Models.Dto;
 
@@ -20,6 +22,11 @@ namespace IncidentAlert.Util
 
             // contracts
             CreateMap<Category, CategoryCreatedEvent>().ReverseMap();
+            CreateMap<Incident, IncidentCreateEvent>()
+                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.IncidentCategories.Select(ic => ic.Category)))
+                .ReverseMap();
+            CreateMap<Location, LocationCreateEvent>().ReverseMap();
+
         }
     }
 }

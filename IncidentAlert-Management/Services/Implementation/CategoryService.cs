@@ -24,11 +24,7 @@ namespace IncidentAlert_Management.Services.Implementation
 
             var category = await _repository.Add(_mapper.Map<CategoryDto, Category>(categoryDto));
 
-            await _publishEndpoint.Publish(new CategoryCreatedEvent
-            {
-                Id = category.Id,
-                Name = category.Name
-            });
+            await _publishEndpoint.Publish(_mapper.Map<Category, CategoryCreatedEvent>(category));
 
             return _mapper.Map<Category, CategoryDto>(category);
         }

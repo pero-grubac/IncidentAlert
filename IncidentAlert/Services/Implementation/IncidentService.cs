@@ -88,7 +88,7 @@ namespace IncidentAlert.Services.Implementation
                  await Task.WhenAll(incidentDto.Images.Select(async item => await _imageService.Add(item, incident.Id)).ToList());
             */
 
-            await _publishEndpoint.Publish(new IncidentCreateEvent());
+            await _publishEndpoint.Publish(_mapper.Map<IncidentDto, IncidentCreateEvent>(incidentDto));
         }
 
         public async Task Delete(int id)
