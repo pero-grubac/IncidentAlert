@@ -1,4 +1,5 @@
-﻿using IncidentAlert_Management.Data;
+﻿using IncidentAlert_Management.Consumers.IncidentConsumers;
+using IncidentAlert_Management.Data;
 using IncidentAlert_Management.JWT;
 using IncidentAlert_Management.Models;
 using IncidentAlert_Management.Models.Dto;
@@ -157,7 +158,7 @@ builder.Services.AddMassTransit(busConfigurator =>
     busConfigurator.SetKebabCaseEndpointNameFormatter();
 
     // Consumers
-
+    busConfigurator.AddConsumer<IncidentCreatedConsumer>();
 
     busConfigurator.UsingRabbitMq((context, configurator) =>
     {
