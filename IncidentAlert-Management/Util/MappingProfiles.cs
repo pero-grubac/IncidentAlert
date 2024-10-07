@@ -28,6 +28,9 @@ namespace IncidentAlert_Management.Util
                 .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.IncidentCategories.Select(ic => ic.Category)))
                 .ReverseMap();
             CreateMap<Location, LocationCreateEvent>().ReverseMap();
+            CreateMap<Incident, IncidentApprovedEvent>()
+                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.IncidentCategories.Select(ic => ic.Category)))
+                .ReverseMap();
         }
     }
 }
