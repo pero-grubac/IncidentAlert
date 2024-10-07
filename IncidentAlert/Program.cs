@@ -1,4 +1,5 @@
 using IncidentAlert.Consumers.CategoryConsumers;
+using IncidentAlert.Consumers.IncidentConsumers;
 using IncidentAlert.Data;
 using IncidentAlert.Middleware;
 using IncidentAlert.Repositories;
@@ -67,6 +68,7 @@ builder.Services.AddMassTransit(busConfigurator =>
 
     //Consumer
     busConfigurator.AddConsumer<CategoryCreatedConsumer>();
+    busConfigurator.AddConsumer<IncidentApprovedConsumer>();
 
     busConfigurator.UsingRabbitMq((context, configurator) =>
     {
