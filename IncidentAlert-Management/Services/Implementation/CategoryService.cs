@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Contracts;
+using Contracts.Category;
 using IncidentAlert_Management.Exceptions;
 using IncidentAlert_Management.Models;
 using IncidentAlert_Management.Models.Dto;

@@ -1,14 +1,17 @@
 ﻿using AutoMapper;
+using Contracts.Incident;
 using IncidentAlert.Exceptions;
 using IncidentAlert.Models;
 using IncidentAlert.Models.Dto;
 using IncidentAlert.Repositories;
+using MassTransit;
 
 namespace IncidentAlert.Services.Implementation
 {
     public class IncidentService(IMapper mapper, IIncidentRepository incidentRepository,
         ILocationRepository locationRepository, ICategoryRepository categoryRepository,
-        IIncidentCategoryRepository incidentCategoryRepository, IImageService imageService) : IIncidentService
+        IIncidentCategoryRepository incidentCategoryRepository, IImageService imageService,
+        IPublishEndpoint publishEndpoint) : IIncidentService
     {
         private readonly IMapper _mapper = mapper;
         private readonly IIncidentRepository _repository = incidentRepository;
@@ -16,73 +19,76 @@ namespace IncidentAlert.Services.Implementation
         private readonly ICategoryRepository _categoryRepository = categoryRepository;
         private readonly IIncidentCategoryRepository _incidentCategoryRepository = incidentCategoryRepository;
         private readonly IImageService _imageService = imageService;
-
+        private readonly IPublishEndpoint _publishEndpoint = publishEndpoint;
         public async Task Add(IncidentDto incidentDto)
         {
-            if (incidentDto.Categories.Count == 0)
-            {
-                throw new EntityCanNotBeCreatedException("Incident needs to belong to a category");
-            };
+            /* if (incidentDto.Categories.Count == 0)
+             {
+                 throw new EntityCanNotBeCreatedException("Incident needs to belong to a category");
+             };
 
-            var invalidCategoryTasks = incidentDto.Categories.Select(async c =>
-            {
-                var exists = await _categoryRepository.Exists(category => category.Name == c);
-                return new { Category = c, Exists = exists };
-            }).ToList();
+             var invalidCategoryTasks = incidentDto.Categories.Select(async c =>
+             {
+                 var exists = await _categoryRepository.Exists(category => category.Name == c);
+                 return new { Category = c, Exists = exists };
+             }).ToList();
 
-            var invalidCategoriesResults = await Task.WhenAll(invalidCategoryTasks);
+             var invalidCategoriesResults = await Task.WhenAll(invalidCategoryTasks);
 
-            // Filtrirajte one koje ne postoje
-            var invalidCategories = invalidCategoriesResults
-                .Where(result => !result.Exists)
-                .Select(result => result.Category)
-                .ToList();
+             // Filtrirajte one koje ne postoje
+             var invalidCategories = invalidCategoriesResults
+                 .Where(result => !result.Exists)
+                 .Select(result => result.Category)
+                 .ToList();
 
-            if (invalidCategories.Any())
-            {
-                throw new EntityCanNotBeCreatedException("One or more categories do not exist.");
-            };
+             if (invalidCategories.Any())
+             {
+                 throw new EntityCanNotBeCreatedException("One or more categories do not exist.");
+             };
 
-            incidentDto.DateTime = incidentDto.DateTime.ToUniversalTime();
-
-
-            var locationExists = await _locationRepository.Exists(l => l.Name == incidentDto.Location.Name);
-            Location location;
-            if (!locationExists)
-            {
-                location = await _locationRepository.Add(_mapper.Map<LocationDto, Location>(incidentDto.Location));
-            }
-            else
-            {
-                location = (await _locationRepository.Find(l => l.Name == incidentDto.Location.Name))!;
-            }
+             incidentDto.DateTime = incidentDto.DateTime.ToUniversalTime();
 
 
-            var newIncident = new Incident
-            {
-                Text = incidentDto.Text,
-                Title = incidentDto.Title,
-                DateTime = incidentDto.DateTime,
-                LocationId = location.Id,
-            };
-            var incident = await _repository.Add(newIncident);
+             var locationExists = await _locationRepository.Exists(l => l.Name == incidentDto.Location.Name);
+             Location location;
+             if (!locationExists)
+             {
+                 location = await _locationRepository.Add(_mapper.Map<LocationDto, Location>(incidentDto.Location));
+             }
+             else
+             {
+                 location = (await _locationRepository.Find(l => l.Name == incidentDto.Location.Name))!;
+             }
 
-            var incidentCategoriesTasks = incidentDto.Categories.Select(async item =>
-            {
-                var category = await _categoryRepository.Find(c => c.Name == item);
 
-                var incidentCategory = new IncidentCategory
-                {
-                    IncidentId = incident.Id,
-                    CategoryId = category!.Id
-                };
-                await _incidentCategoryRepository.Add(incidentCategory);
-            });
+             var newIncident = new Incident
+             {
+                 Text = incidentDto.Text,
+                 Title = incidentDto.Title,
+                 DateTime = incidentDto.DateTime,
+                 LocationId = location.Id,
+             };
+             var incident = await _repository.Add(newIncident);
 
-            await Task.WhenAll(incidentCategoriesTasks);
-            // Create Images
-            if (incidentDto.Images.Count > 0)
-                await Task.WhenAll(incidentDto.Images.Select(async item => await _imageService.Add(item, incident.Id)).ToList());
+             var incidentCategoriesTasks = incidentDto.Categories.Select(async item =>
+             {
+                 var category = await _categoryRepository.Find(c => c.Name == item);
+
+                 var incidentCategory = new IncidentCategory
+                 {
+                     IncidentId = incident.Id,
+                     CategoryId = category!.Id
+                 };
+                 await _incidentCategoryRepository.Add(incidentCategory);
+             });
+
+             await Task.WhenAll(incidentCategoriesTasks);
+             // Create Images
+             if (incidentDto.Images.Count > 0)
+                 await Task.WhenAll(incidentDto.Images.Select(async item => await _imageService.Add(item, incident.Id)).ToList());
+            */
+
+            await _publishEndpoint.Publish(new IncidentCreateEvent());
         }
 
         public async Task Delete(int id)
