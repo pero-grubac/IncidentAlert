@@ -9,6 +9,7 @@ namespace IncidentAlert_Management.Services
         Task<ResponseIncidentDto> GetById(int id);
         Task Add(IncidentDto incidentDto);
         Task<IncidentDto> Update(int id, IncidentDto incidentDto);
+        Task Approve(int id, IncidentDto incidentDto);
         Task Delete(int id);
         Task<IEnumerable<ResponseIncidentDto>> GetAllByCategoryName(string categoryName);
         Task<IEnumerable<ResponseIncidentDto>> GetAllOnDate(DateTime date);

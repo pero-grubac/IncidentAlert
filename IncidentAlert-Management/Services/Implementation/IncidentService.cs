@@ -1,14 +1,17 @@
 ﻿using AutoMapper;
+using Contracts.Incident;
 using IncidentAlert_Management.Exceptions;
 using IncidentAlert_Management.Models;
 using IncidentAlert_Management.Models.Dto;
 using IncidentAlert_Management.Repositories;
+using MassTransit;
 
 namespace IncidentAlert_Management.Services.Implementation
 {
     public class IncidentService(IMapper mapper, IIncidentRepository incidentRepository,
         ILocationRepository locationRepository, ICategoryRepository categoryRepository,
-        IIncidentCategoryRepository incidentCategoryRepository, IImageService imageService) : IIncidentService
+        IIncidentCategoryRepository incidentCategoryRepository, IImageService imageService,
+         IPublishEndpoint publishEndpoint) : IIncidentService
     {
         private readonly IMapper _mapper = mapper;
         private readonly IIncidentRepository _repository = incidentRepository;
@@ -16,6 +19,7 @@ namespace IncidentAlert_Management.Services.Implementation
         private readonly ICategoryRepository _categoryRepository = categoryRepository;
         private readonly IIncidentCategoryRepository _incidentCategoryRepository = incidentCategoryRepository;
         private readonly IImageService _imageService = imageService;
+        private readonly IPublishEndpoint _publishEndpoint = publishEndpoint;
 
         public async Task Add(IncidentDto incidentDto)
         {
@@ -194,6 +198,23 @@ namespace IncidentAlert_Management.Services.Implementation
             await _repository.Update(incident);
 
             return _mapper.Map<Incident, ResponseIncidentDto>(incident);
+        }
+
+        public async Task Approve(int id, IncidentDto incidentDto)
+        {
+            if (id != incidentDto.Id)
+                throw new ArgumentException("The ID in the path does not match the ID in the provided data.");
+
+            if (!await _repository.Exists(i => i.Id == incidentDto.Id))
+                throw new EntityDoesNotExistException($"Incident with id {id} does not exists.");
+
+            var incident = await _repository.GetById(id);
+            var approvedIncident = _mapper.Map<Incident, IncidentApprovedEvent>(incident!);
+            approvedIncident.Images = await _imageService.GetImagesAsFiles(id);
+
+            await _publishEndpoint.Publish(approvedIncident);
+
+            // Delete incident
         }
     }
 }

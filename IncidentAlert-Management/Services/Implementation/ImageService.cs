@@ -99,5 +99,28 @@ namespace IncidentAlert_Management.Services.Implementation
 
             return imageUrls;
         }
+
+        public async Task<ICollection<IFormFile>> GetImagesAsFiles(int incidentId)
+        {
+            var uploadsFolderPath = Path.Combine(_environment.WebRootPath, "uploads", incidentId.ToString());
+            var formFiles = new List<IFormFile>();
+
+            if (Directory.Exists(uploadsFolderPath))
+            {
+                var imageFiles = Directory.GetFiles(uploadsFolderPath);
+                foreach (var imagePath in imageFiles)
+                {
+                    var fileStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
+                    var formFile = new FormFile(fileStream, 0, fileStream.Length, "image", Path.GetFileName(imagePath))
+                    {
+                        Headers = new HeaderDictionary(),
+                        ContentType = "image/jpeg" // Prilagodi prema tipu sadržaja
+                    };
+                    formFiles.Add(formFile);
+                }
+            }
+
+            return formFiles;
+        }
     }
 }
