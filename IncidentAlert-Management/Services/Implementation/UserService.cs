@@ -26,7 +26,7 @@ namespace IncidentAlert_Management.Services.Implementation
             {
                 UserName = user.Username,
                 Email = user.Email,
-                Role = RoleEnum.NOTITLE,
+                Role = RoleEnum.MODERATOR,
             };
             var result = await _userManager.CreateAsync(newUser, user.Password);
 

@@ -6,6 +6,7 @@ using IncidentAlert_Management.Repositories;
 using IncidentAlert_Management.Repositories.Implementation;
 using IncidentAlert_Management.Services;
 using IncidentAlert_Management.Services.Implementation;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -150,6 +151,25 @@ builder.Services.AddScoped<ICustomPasswordService, CustomPasswordService>();
 // HttpContext
 builder.Services.AddHttpContextAccessor();
 
+// MassTransit
+builder.Services.AddMassTransit(busConfigurator =>
+{
+    busConfigurator.SetKebabCaseEndpointNameFormatter();
+
+    // Consumers
+
+
+    busConfigurator.UsingRabbitMq((context, configurator) =>
+    {
+        configurator.Host(new Uri(builder.Configuration["MessageBroker:Host"]!), h =>
+        {
+            h.Username(builder.Configuration["MessageBroker:Username"]!);
+            h.Password(builder.Configuration["MessageBroker:Password"]!);
+        });
+
+        configurator.ConfigureEndpoints(context);
+    });
+});
 
 var app = builder.Build();
 
@@ -158,6 +178,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.ApplyMigrations();
 }
 
 app.UseHttpsRedirection();

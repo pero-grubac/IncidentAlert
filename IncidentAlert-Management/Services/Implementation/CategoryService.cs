@@ -1,17 +1,21 @@
 ﻿using AutoMapper;
+using Contracts;
 using IncidentAlert_Management.Exceptions;
 using IncidentAlert_Management.Models;
 using IncidentAlert_Management.Models.Dto;
 using IncidentAlert_Management.Repositories;
 using IncidentAlert_Management.Util;
+using MassTransit;
 using System.Linq.Expressions;
 
 namespace IncidentAlert_Management.Services.Implementation
 {
-    public class CategoryService(IMapper mapper, ICategoryRepository categoryRepository) : ICategoryService
+    public class CategoryService(IMapper mapper, ICategoryRepository categoryRepository,
+        IPublishEndpoint publishEndpoint) : ICategoryService
     {
         private readonly IMapper _mapper = mapper;
         private readonly ICategoryRepository _repository = categoryRepository;
+        private readonly IPublishEndpoint _publishEndpoint = publishEndpoint;
         public async Task<CategoryDto> Add(CategoryDto categoryDto)
         {
             bool exists = await _repository.Exists(c => c.Name == categoryDto.Name);
@@ -19,6 +23,13 @@ namespace IncidentAlert_Management.Services.Implementation
                 throw new InvalidOperationException("Category already exists");
 
             var category = await _repository.Add(_mapper.Map<CategoryDto, Category>(categoryDto));
+
+            await _publishEndpoint.Publish(new CategoryCreatedEvent
+            {
+                Id = category.Id,
+                Name = category.Name
+            });
+
             return _mapper.Map<Category, CategoryDto>(category);
         }
 

@@ -1,0 +1,55 @@
+services:
+  incidentalert:
+    image: ${DOCKER_REGISTRY-}incidentalert
+    container_name: incidentalert
+    build:
+      context: .
+      dockerfile: IncidentAlert/Dockerfile
+    ports:
+      - "5000:5000"
+      - "5001:5001" 
+
+  incidentalert.management:
+    image: ${DOCKER_REGISTRY-}incidentalert.management
+    container_name: incidentalert.management
+    build:
+      context: .
+      dockerfile: IncidentAlert-Management/Dockerfile
+    ports:
+      - "5002:5002"
+      - "5003:5003"
+
+  incidentalert.database:
+    image: postgres:latest
+    container_name: incidentalert.database
+    environment:
+      - POSTGRES_DB=incident_alert
+      - POSTGRES_USER=incidentalertuser
+      - POSTGRES_PASSWORD=1nc1d3ntAl3rtUs3r$
+    volumes:
+      - ./.containers/incidentalert-db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432 
+       
+  incidentalert.management.database:
+    image: postgres:latest
+    container_name: incidentalert.management.database
+    environment:
+      - POSTGRES_DB=incident_alert_mangment
+      - POSTGRES_USER=incidentalertmanager
+      - POSTGRES_PASSWORD=1nc1d3nta13rtmang3r
+    volumes:
+      - ./.containers/incidentalert-management-db:/var/lib/postgresql/data
+    ports:
+      - 5431:5432
+
+  incidentaler.mq:
+    image: rabbitmq:latest
+    container_name: incidentaler.mq
+    hostname: incidentaler-mq
+    volumes:
+      - ./.containers/queue/data/:/var/lib/rabbitmq
+      - ./.containers/queue/log/:/var/log/rabbitmq
+    environment:
+        RABBITMQ_DEFAULT_USER: quest
+        RABBITMQ_DEFAULT_PASS: quest  

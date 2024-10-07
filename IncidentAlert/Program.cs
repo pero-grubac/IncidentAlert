@@ -1,9 +1,11 @@
+using IncidentAlert.Consumers.CategoryConsumers;
 using IncidentAlert.Data;
 using IncidentAlert.Middleware;
 using IncidentAlert.Repositories;
 using IncidentAlert.Repositories.Implementation;
 using IncidentAlert.Services;
 using IncidentAlert.Services.Implementation;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -58,6 +60,26 @@ builder.Services.AddCors(options =>
 // HttpContext
 builder.Services.AddHttpContextAccessor();
 
+// MassTransit
+builder.Services.AddMassTransit(busConfigurator =>
+{
+    busConfigurator.SetKebabCaseEndpointNameFormatter();
+
+    //Consumer
+    busConfigurator.AddConsumer<CategoryCreatedConsumer>();
+
+    busConfigurator.UsingRabbitMq((context, configurator) =>
+    {
+        configurator.Host(new Uri(builder.Configuration["MessageBroker:Host"]!), h =>
+        {
+            h.Username(builder.Configuration["MessageBroker:Username"]!);
+            h.Password(builder.Configuration["MessageBroker:Password"]!);
+        });
+
+        configurator.ConfigureEndpoints(context);
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -65,6 +87,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.ApplyMigrations();
 }
 // Exception middleware
 app.UseMiddleware<ExceptionMiddleware>();
