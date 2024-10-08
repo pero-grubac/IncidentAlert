@@ -59,7 +59,7 @@ namespace IncidentAlert_Management.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> Update(, [FromBody] CategoryDto newCategory)
+        public async Task<IActionResult> Update([FromBody] CategoryDto newCategory)
         {
             if (newCategory == null || !ModelState.IsValid)
                 return BadRequest(ModelState);
