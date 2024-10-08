@@ -22,6 +22,17 @@ namespace IncidentAlert.Controllers
             return Ok(incidents);
         }
 
+        [HttpGet("getAllSimple")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]
+        public async Task<IActionResult> GetAllSimple()
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var incidents = await _service.GetAllSimple();
+
+            return Ok(incidents);
+        }
 
         [HttpGet("getByCategoryId/{id:int}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<IncidentDto>))]

@@ -16,13 +16,16 @@ namespace IncidentAlert_Management.Services.Implementation
         private readonly IMapper _mapper = mapper;
         private readonly ICategoryRepository _repository = categoryRepository;
         private readonly IPublishEndpoint _publishEndpoint = publishEndpoint;
-        public async Task<CategoryDto> Add(CategoryDto categoryDto)
+        public async Task<CategoryDto> Add(string name)
         {
-            bool exists = await _repository.Exists(c => c.Name == categoryDto.Name);
+            bool exists = await _repository.Exists(c => c.Name == name);
             if (exists)
                 throw new InvalidOperationException("Category already exists");
 
-            var category = await _repository.Add(_mapper.Map<CategoryDto, Category>(categoryDto));
+            var category = await _repository.Add(new Category
+            {
+                Name = name,
+            });
 
             await _publishEndpoint.Publish(_mapper.Map<Category, CategoryCreatedEvent>(category));
 

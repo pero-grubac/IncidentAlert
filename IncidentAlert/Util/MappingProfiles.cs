@@ -14,13 +14,15 @@ namespace IncidentAlert.Util
             CreateMap<Category, CategoryDto>().ReverseMap();
 
             CreateMap<Incident, IncidentDto>()
-                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.IncidentCategories.Select(ic => ic.Category)))
+                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.IncidentCategories.Select(ic => ic.Category.Name)))
                 .ReverseMap();
             CreateMap<Incident, ResponseIncidentDto>()
                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.IncidentCategories.Select(ic => ic.Category)))
                .ReverseMap();
+            CreateMap<Incident, SimpleIncident>().ReverseMap();
 
             CreateMap<Location, LocationDto>().ReverseMap();
+            CreateMap<Location, SimpleLocation>().ReverseMap();
 
             // contracts
             CreateMap<CategoryDto, CategoryCreatedEvent>().ReverseMap();

@@ -86,11 +86,10 @@ namespace IncidentAlert.Services.Implementation
             return response;
         }
 
-        public async Task<IEnumerable<ResponseIncidentDto>> GetAll()
+        public async Task<IEnumerable<IncidentDto>> GetAll()
         {
             var incidents = await _repository.GetAll();
-            var response = await MapImageNames(_mapper.Map<IEnumerable<Incident>, IEnumerable<ResponseIncidentDto>>(incidents));
-            return response;
+            return _mapper.Map<IEnumerable<Incident>, IEnumerable<IncidentDto>>(incidents);
         }
 
         public async Task<IEnumerable<ResponseIncidentDto>> MapImageNames(IEnumerable<ResponseIncidentDto> incidents)
@@ -197,6 +196,12 @@ namespace IncidentAlert.Services.Implementation
             if (approvedIncident.ImagesData.Count > 0)
                 await Task.WhenAll(approvedIncident.ImagesData.Select(async item => await _imageService.Add(item, incident.Id)).ToList());
 
+        }
+
+        public async Task<IEnumerable<SimpleIncident>> GetAllSimple()
+        {
+            var incidents = await _repository.GetAll();
+            return _mapper.Map<IEnumerable<Incident>, IEnumerable<SimpleIncident>>(incidents);
         }
     }
 }

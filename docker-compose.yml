@@ -19,6 +19,26 @@ services:
       - "5002:5002"
       - "5003:5003"
 
+  incidentalert.ml:
+    image: ${DOCKER_REGISTRY-}incidentalert.ml
+    container_name: incidentalert.ml
+    build:
+      context: .
+      dockerfile: IncidentAlert-ML/Dockerfile
+    ports:
+      - "5004:5004"
+      - "5005:5005"
+
+  incidentalert.statistics:
+    image: ${DOCKER_REGISTRY-}incidentalert.statistics
+    container_name: incidentalert.statistics
+    build:
+      context: .
+      dockerfile: IncidentAlert-Statistics/Dockerfile
+    ports:
+      - "5006:5006"
+      - "5007:5007"
+
   incidentalert.database:
     image: postgres:latest
     container_name: incidentalert.database

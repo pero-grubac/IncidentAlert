@@ -43,7 +43,7 @@ namespace IncidentAlert_Management.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> Add([FromBody] CategoryDto newCategory)
+        public async Task<IActionResult> Add([FromBody] string newCategory)
         {
             if (newCategory == null || !ModelState.IsValid)
                 return BadRequest(ModelState);

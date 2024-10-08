@@ -9,7 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IncidentAlert-Management", 
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{12F7C928-3299-4386-A5B1-72F3BA1BA7C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{20544EBE-7325-4408-850E-09FEA8B78BEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Contracts\Contracts.csproj", "{20544EBE-7325-4408-850E-09FEA8B78BEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IncidentAlert-ML", "IncidentAlert-ML\IncidentAlert-ML.csproj", "{CFC0D8F6-E8A1-41DB-BD24-356B35C28707}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IncidentAlert-Statistics", "IncidentAlert-Statistics\IncidentAlert-Statistics.csproj", "{760A45D0-3D02-4950-9624-CB4BD6ABE8D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{20544EBE-7325-4408-850E-09FEA8B78BEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20544EBE-7325-4408-850E-09FEA8B78BEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20544EBE-7325-4408-850E-09FEA8B78BEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFC0D8F6-E8A1-41DB-BD24-356B35C28707}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFC0D8F6-E8A1-41DB-BD24-356B35C28707}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFC0D8F6-E8A1-41DB-BD24-356B35C28707}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFC0D8F6-E8A1-41DB-BD24-356B35C28707}.Release|Any CPU.Build.0 = Release|Any CPU
+		{760A45D0-3D02-4950-9624-CB4BD6ABE8D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{760A45D0-3D02-4950-9624-CB4BD6ABE8D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{760A45D0-3D02-4950-9624-CB4BD6ABE8D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{760A45D0-3D02-4950-9624-CB4BD6ABE8D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

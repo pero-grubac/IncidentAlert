@@ -215,7 +215,7 @@ namespace IncidentAlert_Management.Services.Implementation
 
             await _publishEndpoint.Publish(approvedIncident);
 
-            //  await Delete(id);
+            await Delete(id);
         }
     }
 }

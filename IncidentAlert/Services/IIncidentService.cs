@@ -4,7 +4,8 @@ namespace IncidentAlert.Services
 {
     public interface IIncidentService
     {
-        Task<IEnumerable<ResponseIncidentDto>> GetAll();
+        Task<IEnumerable<IncidentDto>> GetAll();
+        Task<IEnumerable<SimpleIncident>> GetAllSimple();
         Task<IEnumerable<ResponseIncidentDto>> GetByCategoryId(int categoryId);
         Task<ResponseIncidentDto> GetById(int id);
         Task Add(IncidentDto incidentDto);
