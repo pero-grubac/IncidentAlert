@@ -7,7 +7,7 @@ namespace IncidentAlert.Services
         Task<IEnumerable<CategoryDto>> GetAll();
         Task<CategoryDto?> GetById(int id);
         Task<CategoryDto> Add(CategoryDto categoryDto);
-        Task<CategoryDto> Update(int id, CategoryDto categoryDto);
+        Task<CategoryDto> Update(CategoryDto categoryDto);
         Task Delete(int id);
 
     }

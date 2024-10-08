@@ -12,23 +12,29 @@ namespace IncidentAlert.Util
         public MappingProfiles()
         {
             CreateMap<Category, CategoryDto>().ReverseMap();
+
             CreateMap<Incident, IncidentDto>()
                 .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.IncidentCategories.Select(ic => ic.Category)))
                 .ReverseMap();
             CreateMap<Incident, ResponseIncidentDto>()
                .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.IncidentCategories.Select(ic => ic.Category)))
                .ReverseMap();
+
             CreateMap<Location, LocationDto>().ReverseMap();
 
             // contracts
-            CreateMap<Category, CategoryCreatedEvent>().ReverseMap();
+            CreateMap<Category, CategoryUpdatedConsumer>().ReverseMap();
+            CreateMap<Category, CategoryDeleteEvent>().ReverseMap();
+
             CreateMap<Incident, IncidentCreateEvent>()
                 .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.IncidentCategories.Select(ic => ic.Category)))
                 .ReverseMap();
-            CreateMap<Location, LocationCreateEvent>().ReverseMap();
             CreateMap<Incident, IncidentApprovedEvent>()
                 .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.IncidentCategories.Select(ic => ic.Category)))
                 .ReverseMap();
+
+            CreateMap<Location, LocationCreateEvent>().ReverseMap();
+
         }
     }
 }

@@ -24,7 +24,7 @@ namespace IncidentAlert_Management.Services.Implementation
 
             var category = await _repository.Add(_mapper.Map<CategoryDto, Category>(categoryDto));
 
-            await _publishEndpoint.Publish(_mapper.Map<Category, CategoryCreatedEvent>(category));
+            await _publishEndpoint.Publish(_mapper.Map<Category, CategoryUpdatedConsumer>(category));
 
             return _mapper.Map<Category, CategoryDto>(category);
         }
@@ -76,6 +76,8 @@ namespace IncidentAlert_Management.Services.Implementation
                 throw new EntityDoesNotExistException($"Category with id {id} does not exists.");
 
             var updatedCategory = await _repository.Update(_mapper.Map<CategoryDto, Category>(categoryDto));
+
+            await _publishEndpoint.Publish(_mapper.Map<Category, CategoryUpdatedConsumer>(updatedCategory));
 
             return _mapper.Map<Category, CategoryDto>(updatedCategory);
         }

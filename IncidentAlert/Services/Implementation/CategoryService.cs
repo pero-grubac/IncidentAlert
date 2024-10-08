@@ -60,13 +60,10 @@ namespace IncidentAlert.Services.Implementation
             return Expression.Lambda<Func<Category, bool>>(body, parameter);
         }
 
-        public async Task<CategoryDto> Update(int id, CategoryDto categoryDto)
+        public async Task<CategoryDto> Update(CategoryDto categoryDto)
         {
-            if (id != categoryDto.Id)
-                throw new ArgumentException("The ID in the path does not match the ID in the provided data.");
-
             if (!await _repository.Exists(c => c.Id == categoryDto.Id))
-                throw new EntityDoesNotExistException($"Category with id {id} does not exists.");
+                throw new EntityDoesNotExistException($"Category with id {categoryDto.Id} does not exists.");
 
             var updatedCategory = await _repository.Update(_mapper.Map<CategoryDto, Category>(categoryDto));
 
