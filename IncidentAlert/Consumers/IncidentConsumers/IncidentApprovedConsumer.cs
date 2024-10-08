@@ -1,19 +1,19 @@
 ﻿using AutoMapper;
 using Contracts.Incident;
-using IncidentAlert.Repositories;
+using IncidentAlert.Models.Dto;
+using IncidentAlert.Services;
 using MassTransit;
 
 namespace IncidentAlert.Consumers.IncidentConsumers
 {
-    public sealed class IncidentApprovedConsumer(IMapper mapper, IIncidentRepository repository)
-        : IConsumer<IncidentCreateEvent>
+    public sealed class IncidentApprovedConsumer(IMapper mapper, IIncidentService service)
+        : IConsumer<IncidentApprovedEvent>
     {
         private readonly IMapper _mapper = mapper;
-        private readonly IIncidentRepository _repository = repository;
-        public async Task Consume(ConsumeContext<IncidentCreateEvent> context)
+        private readonly IIncidentService _service = service;
+        public async Task Consume(ConsumeContext<IncidentApprovedEvent> context)
         {
-            // TODO sacuvaj
-            await _repository.GetAll();
+            await _service.Approve(_mapper.Map<IncidentApprovedEvent, ApprovedIncident>(context.Message));
         }
     }
 }

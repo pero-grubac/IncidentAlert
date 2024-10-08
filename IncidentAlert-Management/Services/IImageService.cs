@@ -10,5 +10,6 @@ namespace IncidentAlert_Management.Services
         Task<IEnumerable<Image>> GetAllByIncidentId(int incidentId);
         Task<ICollection<string>?> GetImageNames(int incidentId);
         Task<ICollection<IFormFile>> GetImagesAsFiles(int incidentId);
+        Task<ICollection<ImageData>> GetImageData(int incidentId);
     }
 }

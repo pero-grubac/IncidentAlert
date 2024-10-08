@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Contracts.Image;
 using Contracts.Incident;
 using IncidentAlert.Exceptions;
 using IncidentAlert.Models;
@@ -23,81 +22,15 @@ namespace IncidentAlert.Services.Implementation
         private readonly IPublishEndpoint _publishEndpoint = publishEndpoint;
         public async Task Add(IncidentDto incidentDto)
         {
-            /* if (incidentDto.Categories.Count == 0)
-             {
-                 throw new EntityCanNotBeCreatedException("Incident needs to belong to a category");
-             };
-
-             var invalidCategoryTasks = incidentDto.Categories.Select(async c =>
-             {
-                 var exists = await _categoryRepository.Exists(category => category.Name == c);
-                 return new { Category = c, Exists = exists };
-             }).ToList();
-
-             var invalidCategoriesResults = await Task.WhenAll(invalidCategoryTasks);
-
-             // Filtrirajte one koje ne postoje
-             var invalidCategories = invalidCategoriesResults
-                 .Where(result => !result.Exists)
-                 .Select(result => result.Category)
-                 .ToList();
-
-             if (invalidCategories.Any())
-             {
-                 throw new EntityCanNotBeCreatedException("One or more categories do not exist.");
-             };
-
-             incidentDto.DateTime = incidentDto.DateTime.ToUniversalTime();
-
-
-             var locationExists = await _locationRepository.Exists(l => l.Name == incidentDto.Location.Name);
-             Location location;
-             if (!locationExists)
-             {
-                 location = await _locationRepository.Add(_mapper.Map<LocationDto, Location>(incidentDto.Location));
-             }
-             else
-             {
-                 location = (await _locationRepository.Find(l => l.Name == incidentDto.Location.Name))!;
-             }
-
-
-             var newIncident = new Incident
-             {
-                 Text = incidentDto.Text,
-                 Title = incidentDto.Title,
-                 DateTime = incidentDto.DateTime,
-                 LocationId = location.Id,
-             };
-             var incident = await _repository.Add(newIncident);
-
-             var incidentCategoriesTasks = incidentDto.Categories.Select(async item =>
-             {
-                 var category = await _categoryRepository.Find(c => c.Name == item);
-
-                 var incidentCategory = new IncidentCategory
-                 {
-                     IncidentId = incident.Id,
-                     CategoryId = category!.Id
-                 };
-                 await _incidentCategoryRepository.Add(incidentCategory);
-             });
-
-             await Task.WhenAll(incidentCategoriesTasks);
-             // Create Images
-             if (incidentDto.Images.Count > 0)
-                 await Task.WhenAll(incidentDto.Images.Select(async item => await _imageService.Add(item, incident.Id)).ToList());
-            */
-
             var incidentEvent = _mapper.Map<IncidentDto, IncidentCreateEvent>(incidentDto);
             incidentEvent.ImagesData = incidentDto.Images.Select(image => ConvertToImageData(image)).ToList();
             await _publishEndpoint.Publish(incidentEvent);
         }
-        private ImageData ConvertToImageData(IFormFile file)
+        private Contracts.Image.ImageData ConvertToImageData(IFormFile file)
         {
             using var memoryStream = new MemoryStream();
             file.CopyTo(memoryStream);
-            return new ImageData
+            return new Contracts.Image.ImageData
             {
                 FileName = file.FileName,
                 Content = memoryStream.ToArray()
@@ -196,6 +129,74 @@ namespace IncidentAlert.Services.Implementation
 
             var incident = await _repository.Update(_mapper.Map<IncidentDto, Incident>(incidentDto));
             return _mapper.Map<Incident, IncidentDto>(incident);
+        }
+
+        public async Task Approve(ApprovedIncident approvedIncident)
+        {
+            if (approvedIncident.Categories.Count == 0)
+                throw new EntityCanNotBeCreatedException("Incident needs to belong to a category");
+
+            var invalidCategoryTasks = approvedIncident.Categories.Select(async c =>
+            {
+                var exists = await _categoryRepository.Exists(category => category.Name == c);
+                return new { Category = c, Exists = exists };
+            }).ToList();
+
+            var invalidCategoriesResults = await Task.WhenAll(invalidCategoryTasks);
+
+            // Filtrirajte one koje ne postoje
+            var invalidCategories = invalidCategoriesResults
+                .Where(result => !result.Exists)
+                .Select(result => result.Category)
+                .ToList();
+
+            if (invalidCategories.Count != 0)
+            {
+                throw new EntityCanNotBeCreatedException("One or more categories do not exist.");
+            };
+
+            approvedIncident.DateTime = approvedIncident.DateTime.ToUniversalTime();
+
+            if (approvedIncident.Location == null)
+                throw new EntityCanNotBeCreatedException("Incident needs a location");
+
+            var locationExists = await _locationRepository.Exists(l => l.Name == approvedIncident.Location.Name);
+            Location location;
+            if (!locationExists)
+            {
+                location = await _locationRepository.Add(_mapper.Map<LocationDto, Location>(approvedIncident.Location!));
+            }
+            else
+            {
+                location = (await _locationRepository.Find(l => l.Name == approvedIncident.Location!.Name))!;
+            }
+
+            var newIncident = new Incident
+            {
+                Text = approvedIncident.Text,
+                Title = approvedIncident.Title,
+                DateTime = approvedIncident.DateTime,
+                LocationId = location.Id,
+            };
+            var incident = await _repository.Add(newIncident);
+
+            var incidentCategoriesTasks = approvedIncident.Categories.Select(async item =>
+            {
+                var category = await _categoryRepository.Find(c => c.Name == item);
+
+                var incidentCategory = new IncidentCategory
+                {
+                    IncidentId = incident.Id,
+                    CategoryId = category!.Id
+                };
+                await _incidentCategoryRepository.Add(incidentCategory);
+            });
+
+            await Task.WhenAll(incidentCategoriesTasks);
+
+            if (approvedIncident.ImagesData.Count > 0)
+                await Task.WhenAll(approvedIncident.ImagesData.Select(async item => await _imageService.Add(item, incident.Id)).ToList());
+
         }
     }
 }

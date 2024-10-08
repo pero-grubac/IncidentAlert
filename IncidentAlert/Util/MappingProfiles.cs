@@ -35,9 +35,12 @@ namespace IncidentAlert.Util
                 .ReverseMap();
             CreateMap<IncidentDto, IncidentApprovedEvent>().ReverseMap();
             CreateMap<IncidentDto, IncidentCreateEvent>().ReverseMap();
+            CreateMap<IncidentApprovedEvent, ApprovedIncident>().ReverseMap();
 
             CreateMap<Location, LocationCreateEvent>().ReverseMap();
             CreateMap<LocationDto, LocationCreateEvent>().ReverseMap();
+
+            CreateMap<Contracts.Image.ImageData, ImageData>().ReverseMap();
 
         }
     }

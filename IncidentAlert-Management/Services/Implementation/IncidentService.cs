@@ -202,21 +202,20 @@ namespace IncidentAlert_Management.Services.Implementation
             return _mapper.Map<Incident, ResponseIncidentDto>(incident);
         }
 
-        public async Task Approve(int id, IncidentDto incidentDto)
+        public async Task Approve(int id)
         {
-            if (id != incidentDto.Id)
-                throw new ArgumentException("The ID in the path does not match the ID in the provided data.");
-
-            if (!await _repository.Exists(i => i.Id == incidentDto.Id))
+            if (!await _repository.Exists(i => i.Id == id))
                 throw new EntityDoesNotExistException($"Incident with id {id} does not exists.");
 
             var incident = await _repository.GetById(id);
             var approvedIncident = _mapper.Map<Incident, IncidentApprovedEvent>(incident!);
-            //   approvedIncident.ImagesData = await _imageService.GetImagesAsFiles(id);
+            approvedIncident.Categories = incident.IncidentCategories.Select(ic => ic.Category.Name).ToList();
+            approvedIncident.ImagesData = _mapper.Map<ICollection<Models.Dto.ImageData>,
+                ICollection<Contracts.Image.ImageData>>(await _imageService.GetImageData(id));
 
             await _publishEndpoint.Publish(approvedIncident);
 
-            // Delete incident
+            //  await Delete(id);
         }
     }
 }

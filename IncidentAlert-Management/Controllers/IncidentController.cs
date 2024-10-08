@@ -139,9 +139,23 @@ namespace IncidentAlert_Management.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            //  await _service.Delete(id);
+            await _service.Delete(id);
 
             return Ok("Succesfully deleted");
+        }
+
+        [Authorize(Roles = "MODERATOR")]
+        [HttpPut("Approve/{id:int}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> Approve(int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            await _service.Approve(id);
+
+            return Ok("Succesfully approved");
         }
 
         [Authorize(Roles = "MODERATOR")]

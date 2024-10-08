@@ -1,5 +1,6 @@
 ﻿using IncidentAlert.Exceptions;
 using IncidentAlert.Models;
+using IncidentAlert.Models.Dto;
 using IncidentAlert.Repositories;
 
 namespace IncidentAlert.Services.Implementation
@@ -38,6 +39,43 @@ namespace IncidentAlert.Services.Implementation
             {
                 using var stream = new FileStream(filePath, FileMode.Create);
                 await file.CopyToAsync(stream);
+            }
+            catch (Exception ex)
+            {
+                throw new FileSaveException("An error occurred while saving the file", ex);
+            }
+            var image = new Image
+            {
+                FilePath = $"/uploads/{incidentId}/{file.FileName}",
+                IncidentId = incidentId
+            };
+            await _imageRepository.Add(image);
+        }
+
+        public async Task Add(ImageData file, int incidentId)
+        {
+            if (file.Content == null || file.FileName == null)
+                throw new FileEmptyException("File is empty");
+
+            Incident incident = await _incidentRepository.GetById(incidentId)
+                ?? throw new EntityDoesNotExistException("Article not found.");
+
+            var uploadsFolderPath = Path.Combine(_environment.WebRootPath, "uploads", incident.Id.ToString());
+            if (!Directory.Exists(uploadsFolderPath))
+            {
+                try
+                {
+                    Directory.CreateDirectory(uploadsFolderPath);
+                }
+                catch (Exception ex)
+                {
+                    throw new DirectoryCreationException("Could not create directory for uploads", ex);
+                }
+            }
+            var filePath = Path.Combine(uploadsFolderPath, file.FileName);
+            try
+            {
+                await File.WriteAllBytesAsync(filePath, file.Content);
             }
             catch (Exception ex)
             {

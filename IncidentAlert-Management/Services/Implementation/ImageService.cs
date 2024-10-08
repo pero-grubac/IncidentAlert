@@ -78,6 +78,33 @@ namespace IncidentAlert_Management.Services.Implementation
 
         }
 
+        public async Task<ICollection<ImageData>> GetImageData(int incidentId)
+        {
+            var images = await _imageRepository.GetByIncidentId(incidentId);
+            var imageDataList = new List<ImageData>();
+
+            foreach (var image in images)
+            {
+                // Konvertujemo relativnu putanju do apsolutne putanje na disku
+                var absolutePath = Path.Combine(_environment.WebRootPath, image.FilePath.TrimStart('/'));
+
+                if (File.Exists(absolutePath))
+                {
+                    // Učitavamo sadržaj slike u `byte[]`
+                    var fileContent = await File.ReadAllBytesAsync(absolutePath);
+
+                    // Kreiramo ImageData objekat sa nazivom fajla i sadržajem
+                    imageDataList.Add(new ImageData
+                    {
+                        FileName = Path.GetFileName(image.FilePath),
+                        Content = fileContent
+                    });
+                }
+            }
+            return imageDataList;
+
+        }
+
         public async Task<ICollection<string>?> GetImageNames(int incidentId)
         {
             var images = await _imageRepository.GetByIncidentId(incidentId);

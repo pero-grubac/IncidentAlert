@@ -27,7 +27,11 @@ namespace IncidentAlert_Management.Repositories.Implementation
             => await _dataContext.Incidents.AnyAsync(predicate);
 
         public async Task<Incident?> Find(Expression<Func<Incident, bool>> predicate)
-            => await _dataContext.Incidents.FirstOrDefaultAsync(predicate);
+            => await _dataContext.Incidents.Where(predicate)
+                        .Include(i => i.Location)
+                        .Include(i => i.IncidentCategories)
+                            .ThenInclude(ic => ic.Category)
+                        .FirstOrDefaultAsync();
 
         public async Task<IEnumerable<Incident>> FindAll(Expression<Func<Incident, bool>> predicate)
             => await _dataContext.Incidents.Where(predicate)
