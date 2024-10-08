@@ -1,6 +1,6 @@
 ﻿namespace Contracts.Category
 {
-    public record CategoryUpdatedConsumer
+    public record CategoryCreatedEvent
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;

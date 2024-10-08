@@ -49,16 +49,16 @@ namespace IncidentAlert.Controllers
 
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> Update(int id, [FromBody] CategoryDto newCategory)
+        public async Task<IActionResult> Update([FromBody] CategoryDto newCategory)
         {
             if (newCategory == null || !ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var category = await _service.Update(id, newCategory);
+            var category = await _service.Update(newCategory);
 
             return Ok(category);
         }
