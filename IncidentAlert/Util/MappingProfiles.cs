@@ -23,8 +23,9 @@ namespace IncidentAlert.Util
             CreateMap<Location, LocationDto>().ReverseMap();
 
             // contracts
-            CreateMap<Category, CategoryUpdatedConsumer>().ReverseMap();
-            CreateMap<Category, CategoryDeleteEvent>().ReverseMap();
+            CreateMap<CategoryDto, CategoryCreatedEvent>().ReverseMap();
+            CreateMap<CategoryDto, CategoryUpdateEvent>().ReverseMap();
+
 
             CreateMap<Incident, IncidentCreateEvent>()
                 .ForMember(dest => dest.Categories, opt => opt.MapFrom(src => src.IncidentCategories.Select(ic => ic.Category)))

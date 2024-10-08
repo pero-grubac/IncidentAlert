@@ -1,22 +1,20 @@
 ﻿using AutoMapper;
 using Contracts.Category;
-using IncidentAlert.Models;
-using IncidentAlert.Repositories;
+using IncidentAlert.Models.Dto;
+using IncidentAlert.Services;
 using MassTransit;
 
 namespace IncidentAlert.Consumers.CategoryConsumers
 {
-    public sealed class CategoryCreatedConsumer(IMapper mapper, ICategoryRepository repository)
+    public sealed class CategoryCreatedConsumer(IMapper mapper, ICategoryService service)
         : IConsumer<CategoryCreatedEvent>
     {
         private readonly IMapper _mapper = mapper;
-        private readonly ICategoryRepository _repository = repository;
+        private readonly ICategoryService _service = service;
 
         public async Task Consume(ConsumeContext<CategoryCreatedEvent> context)
         {
-            bool exists = await _repository.Exists(c => c.Name == context.Message.Name);
-            if (!exists)
-                await _repository.Add(_mapper.Map<CategoryCreatedEvent, Category>(context.Message));
+            await _service.Add(_mapper.Map<CategoryCreatedEvent, CategoryDto>(context.Message));
         }
     }
 }

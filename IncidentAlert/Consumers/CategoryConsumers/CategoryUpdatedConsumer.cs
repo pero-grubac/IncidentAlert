@@ -6,15 +6,15 @@ using MassTransit;
 
 namespace IncidentAlert.Consumers.CategoryConsumers
 {
-    public sealed class CategoryUpdatedConsumer(IMapper mapper, ICategoryService categoryService)
+    public sealed class CategoryUpdatedConsumer(IMapper mapper, ICategoryService service)
         : IConsumer<CategoryUpdateEvent>
     {
         private readonly IMapper _mapper = mapper;
-        private readonly ICategoryService _categoryService = categoryService;
+        private readonly ICategoryService _service = service;
 
         public async Task Consume(ConsumeContext<CategoryUpdateEvent> context)
         {
-            await _categoryService.Update(_mapper.Map<CategoryUpdateEvent, CategoryDto>(context.Message));
+            await _service.Update(_mapper.Map<CategoryUpdateEvent, CategoryDto>(context.Message));
         }
     }
 }
