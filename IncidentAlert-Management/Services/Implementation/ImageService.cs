@@ -1,5 +1,6 @@
 ﻿using IncidentAlert_Management.Exceptions;
 using IncidentAlert_Management.Models;
+using IncidentAlert_Management.Models.Dto;
 using IncidentAlert_Management.Repositories;
 
 namespace IncidentAlert_Management.Services.Implementation
@@ -12,10 +13,10 @@ namespace IncidentAlert_Management.Services.Implementation
         private readonly IIncidentRepository _incidentRepository = incidentRepository;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
-        public async Task Add(IFormFile file, int incidentId)
+        public async Task Add(ImageData file, int incidentId)
         {
 
-            if (file == null || file.Length == 0)
+            if (file.Content == null || file.FileName == null)
                 throw new FileEmptyException("File is empty");
 
             Incident incident = await _incidentRepository.GetById(incidentId)
@@ -36,8 +37,7 @@ namespace IncidentAlert_Management.Services.Implementation
             var filePath = Path.Combine(uploadsFolderPath, file.FileName);
             try
             {
-                using var stream = new FileStream(filePath, FileMode.Create);
-                await file.CopyToAsync(stream);
+                await File.WriteAllBytesAsync(filePath, file.Content);
             }
             catch (Exception ex)
             {

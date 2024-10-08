@@ -13,6 +13,6 @@
         public LocationDto Location { get; set; } = null!;
         public ICollection<string> Categories { get; set; } = [];
 
-        public ICollection<IFormFile> Images { get; set; } = [];
+        public ICollection<ImageData> ImagesData { get; set; } = [];
     }
 }

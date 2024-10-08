@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Contracts.Image;
 using Contracts.Incident;
 using IncidentAlert.Exceptions;
 using IncidentAlert.Models;
@@ -88,9 +89,20 @@ namespace IncidentAlert.Services.Implementation
                  await Task.WhenAll(incidentDto.Images.Select(async item => await _imageService.Add(item, incident.Id)).ToList());
             */
 
-            await _publishEndpoint.Publish(_mapper.Map<IncidentDto, IncidentCreateEvent>(incidentDto));
+            var incidentEvent = _mapper.Map<IncidentDto, IncidentCreateEvent>(incidentDto);
+            incidentEvent.ImagesData = incidentDto.Images.Select(image => ConvertToImageData(image)).ToList();
+            await _publishEndpoint.Publish(incidentEvent);
         }
-
+        private ImageData ConvertToImageData(IFormFile file)
+        {
+            using var memoryStream = new MemoryStream();
+            file.CopyTo(memoryStream);
+            return new ImageData
+            {
+                FileName = file.FileName,
+                Content = memoryStream.ToArray()
+            };
+        }
         public async Task Delete(int id)
         {
             var entity = await _repository.GetById(id) ?? throw new EntityDoesNotExistException($"Incident with ID {id} does not exist.");

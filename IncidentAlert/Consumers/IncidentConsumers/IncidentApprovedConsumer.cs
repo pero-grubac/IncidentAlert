@@ -10,10 +10,10 @@ namespace IncidentAlert.Consumers.IncidentConsumers
     {
         private readonly IMapper _mapper = mapper;
         private readonly IIncidentRepository _repository = repository;
-        public Task Consume(ConsumeContext<IncidentCreateEvent> context)
+        public async Task Consume(ConsumeContext<IncidentCreateEvent> context)
         {
             // TODO sacuvaj
-            throw new NotImplementedException();
+            await _repository.GetAll();
         }
     }
 }

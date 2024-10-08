@@ -1,5 +1,5 @@
-﻿using Contracts.Location;
-using Microsoft.AspNetCore.Http;
+﻿using Contracts.Image;
+using Contracts.Location;
 
 namespace Contracts.Incident
 {
@@ -12,6 +12,6 @@ namespace Contracts.Incident
         public LocationCreateEvent? Location { get; set; } = default;
         public ICollection<string> Categories { get; set; } = [];
 
-        public ICollection<IFormFile> Images { get; set; } = [];
+        public ICollection<ImageData> ImagesData { get; set; } = [];
     }
 }

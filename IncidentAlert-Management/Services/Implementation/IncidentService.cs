@@ -42,7 +42,7 @@ namespace IncidentAlert_Management.Services.Implementation
                 .Select(result => result.Category)
                 .ToList();
 
-            if (invalidCategories.Any())
+            if (invalidCategories.Count != 0)
             {
                 throw new EntityCanNotBeCreatedException("One or more categories do not exist.");
             };
@@ -85,8 +85,9 @@ namespace IncidentAlert_Management.Services.Implementation
 
             await Task.WhenAll(incidentCategoriesTasks);
             // Create Images
-            if (incidentDto.Images.Count > 0)
-                await Task.WhenAll(incidentDto.Images.Select(async item => await _imageService.Add(item, incident.Id)).ToList());
+            if (incidentDto.ImagesData.Count > 0)
+                await Task.WhenAll(incidentDto.ImagesData.Select(async item => await _imageService.Add(item, incident.Id)).ToList());
+
         }
 
         public async Task Delete(int id)
@@ -141,8 +142,9 @@ namespace IncidentAlert_Management.Services.Implementation
 
         public async Task<IEnumerable<ResponseIncidentDto>> GetAll()
         {
-            var incidents = await _repository.GetAll();
-            var response = await MapImageNames(_mapper.Map<IEnumerable<Incident>, IEnumerable<ResponseIncidentDto>>(incidents));
+            var incidents = _mapper.Map<IEnumerable<Incident>, IEnumerable<ResponseIncidentDto>>
+                (await _repository.GetAll());
+            var response = await MapImageNames(incidents);
             return response;
         }
 
@@ -210,7 +212,7 @@ namespace IncidentAlert_Management.Services.Implementation
 
             var incident = await _repository.GetById(id);
             var approvedIncident = _mapper.Map<Incident, IncidentApprovedEvent>(incident!);
-            approvedIncident.Images = await _imageService.GetImagesAsFiles(id);
+            //   approvedIncident.ImagesData = await _imageService.GetImagesAsFiles(id);
 
             await _publishEndpoint.Publish(approvedIncident);
 
