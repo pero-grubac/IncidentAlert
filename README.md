@@ -24,7 +24,6 @@ Incident Alert is a comprehensive system for incident reporting and management, 
 
 Before deploying, make sure to configure the connection strings for the databases used by Incident Alert and Incident Alert Management in `appsettings.json`.
 
-Each service should have its connection strings properly configured to connect to its respective database. Additionally, both the Incident Alert Statistic and Incident Alert ML services also connect to their own databases to store their query results, allowing them to return cached results for recent requests instead of recalculating them each time.
 
 ## TODO
 
