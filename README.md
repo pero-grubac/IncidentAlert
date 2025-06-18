@@ -1,7 +1,16 @@
 <!DOCTYPE html>
 <html>
 <body>
-    <h1>🚨 Incident Alert</h1>
+    <h1 align="center">🚨 Incident Alert</h1>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Docker-Containerized-blue?logo=docker&logoColor=white" />
+  <img src="https://img.shields.io/badge/ASP.NET_Core-Web_API-purple?logo=dotnet" />
+  <img src="https://img.shields.io/badge/Entity_Framework-Core-green?logo=dotnet" />
+  <img src="https://img.shields.io/badge/CSharp-.NET_8-informational?logo=csharp" />
+  <img src="https://img.shields.io/badge/PostgreSQL-Used-blue?logo=postgresql" />
+  <img src="https://img.shields.io/badge/RabbitMQ-Messaging-orange?logo=rabbitmq" />
+</p>
     <p>
         Incident Alert is a comprehensive system for incident reporting and management, composed of four services designed for users, moderators, and machine learning processes.
     </p>
