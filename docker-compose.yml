@@ -8,16 +8,26 @@ services:
     ports:
       - "5000:5000"
       - "5001:5001" 
+    depends_on:
+      incidentalert.database:
+        condition: service_healthy
 
   incidentalert.management:
     image: ${DOCKER_REGISTRY-}incidentalert.management
     container_name: incidentalert.management
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5002
+      - FrontendUrl=http://localhost:3001
     build:
       context: .
       dockerfile: IncidentAlert-Management/Dockerfile
     ports:
       - "5002:5002"
       - "5003:5003"
+    depends_on:
+      incidentalert.management.database:
+        condition: service_healthy
 
   incidentalert.ml:
     image: ${DOCKER_REGISTRY-}incidentalert.ml
@@ -28,6 +38,12 @@ services:
     ports:
       - "5004:5004"
       - "5005:5005"
+    depends_on:
+      incidentalert.database:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FrontendUrl=http://localhost:3001
 
   incidentalert.statistics:
     image: ${DOCKER_REGISTRY-}incidentalert.statistics
@@ -38,38 +54,58 @@ services:
     ports:
       - "5006:5006"
       - "5007:5007"
+    depends_on:
+      incidentalert.database:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - FrontendUrl=http://localhost:3001
 
   incidentalert.database:
-    image: postgres:latest
-    container_name: incidentalert.database
-    environment:
-      - POSTGRES_DB=incident_alert
-      - POSTGRES_USER=incidentalertuser
-      - POSTGRES_PASSWORD=1nc1d3ntAl3rtUs3r$
-    volumes:
-      - ./.containers/incidentalert-db:/var/lib/postgresql/data
-    ports:
-      - 5432:5432 
-       
+      image: postgres:15
+      container_name: incidentalert.database
+      environment:
+        - POSTGRES_DB=incident_alert
+        - POSTGRES_USER=incidentalertuser
+        - POSTGRES_PASSWORD=1nc1d3ntAl3rtUs3r$
+      volumes:
+        - incidentalert-db:/var/lib/postgresql/data
+      ports:
+        - 5432:5432
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U incidentalertuser -d incident_alert"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
+
   incidentalert.management.database:
-    image: postgres:latest
-    container_name: incidentalert.management.database
-    environment:
-      - POSTGRES_DB=incident_alert_mangment
-      - POSTGRES_USER=incidentalertmanager
-      - POSTGRES_PASSWORD=1nc1d3nta13rtmang3r
-    volumes:
-      - ./.containers/incidentalert-management-db:/var/lib/postgresql/data
-    ports:
-      - 5431:5432
+      image: postgres:15
+      container_name: incidentalert.management.database
+      environment:
+        - POSTGRES_DB=incident_alert_mangment
+        - POSTGRES_USER=incidentalertmanager
+        - POSTGRES_PASSWORD=1nc1d3nta13rtmang3r
+      volumes:
+        - incidentalert-management-db:/var/lib/postgresql/data
+      ports:
+        - 5431:5432
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U incidentalertmanager -d incident_alert_mangment"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
 
   incidentaler.mq:
-    image: rabbitmq:latest
-    container_name: incidentaler.mq
-    hostname: incidentaler-mq
-    volumes:
-      - ./.containers/queue/data/:/var/lib/rabbitmq
-      - ./.containers/queue/log/:/var/log/rabbitmq
-    environment:
-        RABBITMQ_DEFAULT_USER: quest
-        RABBITMQ_DEFAULT_PASS: quest  
+      image: rabbitmq:latest
+      container_name: incidentaler.mq
+      hostname: incidentaler-mq
+      volumes:
+        - incidentalert-mq:/var/lib/rabbitmq
+      environment:
+          RABBITMQ_DEFAULT_USER: quest
+          RABBITMQ_DEFAULT_PASS: quest
+
+volumes:
+  incidentalert-db:
+  incidentalert-management-db:
+  incidentalert-mq:

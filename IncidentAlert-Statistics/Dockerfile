@@ -12,10 +12,10 @@ EXPOSE 5007
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["IncidentAlert-Statistics.csproj", "."]
-RUN dotnet restore "./IncidentAlert-Statistics.csproj"
+COPY ["IncidentAlert-Statistics/IncidentAlert-Statistics.csproj", "IncidentAlert-Statistics/"]
+RUN dotnet restore "./IncidentAlert-Statistics/IncidentAlert-Statistics.csproj"
 COPY . .
-WORKDIR "/src/."
+WORKDIR "/src/IncidentAlert-Statistics"
 RUN dotnet build "./IncidentAlert-Statistics.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
