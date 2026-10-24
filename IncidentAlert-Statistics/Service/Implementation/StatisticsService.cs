@@ -46,6 +46,46 @@ namespace IncidentAlert_Statistics.Service.Implementation
             return results;
         }
 
+        public List<LocationHeat> GetLocationHeat(List<IncidentDto> incidents, DateTime? since)
+        {
+            return incidents
+                .Where(i => i.Location != null && (since == null || i.DateTime >= since))
+                .GroupBy(i => i.Location!.Name)
+                .Select(g => new LocationHeat
+                {
+                    LocationName = g.Key,
+                    Latitude = g.First().Location!.Latitude,
+                    Longitude = g.First().Location!.Longitude,
+                    IncidentCount = g.Count(),
+                })
+                .OrderByDescending(h => h.IncidentCount)
+                .ThenBy(h => h.LocationName)
+                .ToList();
+        }
+
+        public List<DailyIncidentCount> GetIncidentsPerDay(List<IncidentDto> incidents, int days, DateOnly today)
+        {
+            var first = today.AddDays(1 - days);
+            var byDay = incidents
+                .Select(i => (Day: DateOnly.FromDateTime(i.DateTime.ToUniversalTime()), Incident: i))
+                .Where(x => x.Day >= first && x.Day <= today)
+                .ToLookup(x => x.Day, x => x.Incident);
+
+            // Every day appears, even without incidents, so a chart has no gaps.
+            return Enumerable.Range(0, days)
+                .Select(offset => first.AddDays(offset))
+                .Select(day => new DailyIncidentCount
+                {
+                    Date = day,
+                    Total = byDay[day].Count(),
+                    Categories = byDay[day]
+                        .SelectMany(i => i.Categories)
+                        .GroupBy(c => c)
+                        .ToDictionary(g => g.Key, g => g.Count()),
+                })
+                .ToList();
+        }
+
         // Privatne metode za računanje rezultata na osnovu vremenskih perioda.
 
         private LocationIncidentCount CalculateLocationWithMostIncidents(List<IncidentDto> incidents, DateTime? startDate = null)

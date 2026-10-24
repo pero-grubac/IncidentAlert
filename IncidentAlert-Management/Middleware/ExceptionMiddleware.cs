@@ -24,6 +24,16 @@ namespace IncidentAlert_Management.Middleware
 
             ErrorDetails details = ex switch
             {
+                AccountPendingException custom => new ErrorDetails
+                {
+                    Code = (int)HttpStatusCode.Forbidden, // 403 Forbidden
+                    Message = custom.GetBaseMessage(),
+                },
+                UnauthorizedAccessException => new ErrorDetails
+                {
+                    Code = (int)HttpStatusCode.Unauthorized, // 401 Unauthorized
+                    Message = ex.Message,
+                },
                 EntityDoesNotExistException custom => new ErrorDetails
                 {
                     Code = (int)HttpStatusCode.NotFound, // 404 Not Found

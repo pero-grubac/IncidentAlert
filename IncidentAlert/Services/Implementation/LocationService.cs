@@ -1,14 +1,13 @@
-﻿using AutoMapper;
-using IncidentAlert.Exceptions;
+﻿using IncidentAlert.Exceptions;
 using IncidentAlert.Models;
 using IncidentAlert.Models.Dto;
 using IncidentAlert.Repositories;
+using IncidentAlert.Util;
 
 namespace IncidentAlert.Services.Implementation
 {
-    public class LocationService(IMapper mapper, ILocationRepository locationRepository) : ILocationService
+    public class LocationService(ILocationRepository locationRepository) : ILocationService
     {
-        private readonly IMapper _mapper = mapper;
         private readonly ILocationRepository _repository = locationRepository;
         public async Task<LocationDto> Add(LocationDto locationDto)
         {
@@ -16,8 +15,8 @@ namespace IncidentAlert.Services.Implementation
             if (exists)
                 throw new InvalidOperationException("Location already exists");
 
-            var location = await _repository.Add(_mapper.Map<LocationDto, Location>(locationDto));
-            return _mapper.Map<Location, LocationDto>(location);
+            var location = await _repository.Add(locationDto.ToEntity());
+            return location.ToDto();
         }
 
         public async Task Delete(int id)
@@ -34,14 +33,14 @@ namespace IncidentAlert.Services.Implementation
             }
         }
 
-        public async Task<IEnumerable<LocationDto>> GetAll() => _mapper.Map<IEnumerable<Location>, IEnumerable<LocationDto>>(await _repository.GetAll());
+        public async Task<IEnumerable<LocationDto>> GetAll() => (await _repository.GetAll()).Select(l => l.ToDto()).ToList();
 
         public async Task<LocationDto?> GetById(int id)
         {
             var location = await _repository.GetById(id);
             return location == null ?
               throw new EntityDoesNotExistException($"Location with id {id} does not exists.") :
-                _mapper.Map<Location, LocationDto>(location);
+                location.ToDto();
         }
 
         public async Task<LocationDto> Update(int id, LocationDto locationDto)
@@ -52,9 +51,8 @@ namespace IncidentAlert.Services.Implementation
             if (!await _repository.Exists(c => c.Id == locationDto.Id))
                 throw new EntityDoesNotExistException($"Location with id {id} does not exists.");
 
-            var location = await _repository.Update(_mapper.Map<LocationDto, Location>(locationDto));
-
-            return _mapper.Map<Location, LocationDto>(location);
+            var location = await _repository.Update(locationDto.ToEntity());
+            return location.ToDto();
         }
     }
 }

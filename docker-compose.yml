@@ -1,3 +1,16 @@
+name: incidentalert
+
+# Every value below has a development default, so `docker compose up` works out of the box.
+# For anything public, copy .env.example to .env and set real secrets.
+x-broker-env: &broker-env
+  MessageBroker__Host: amqp://incidentalert-mq:5672
+  MessageBroker__Username: ${RABBITMQ_USER:-incidentalert}
+  MessageBroker__Password: ${RABBITMQ_PASSWORD:-dev-rabbitmq}
+
+# Tokens are signed by Management and checked by Management, ML and Statistics.
+x-jwt-env: &jwt-env
+  JwtSettings__Secret: ${JWT_SECRET:-dev-only-signing-key-change-me-0123456789abcdef}
+
 services:
   incidentalert:
     image: ${DOCKER_REGISTRY-}incidentalert
@@ -5,29 +18,45 @@ services:
     build:
       context: .
       dockerfile: IncidentAlert/Dockerfile
+    environment:
+      <<: *broker-env
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ConnectionStrings__IncidentAlertDB: Host=incidentalert.database;Port=5432;Database=incident_alert;Username=${INCIDENT_DB_USER:-incidentalertuser};Password=${INCIDENT_DB_PASSWORD:-dev-incidentalert-db}
+      FrontendUrl: ${USER_FRONTEND_URL:-http://localhost:3000}
     ports:
       - "5000:5000"
-      - "5001:5001" 
+    volumes:
+      - incidentalert-uploads:/app/wwwroot/uploads
     depends_on:
       incidentalert.database:
         condition: service_healthy
+      incidentalert-mq:
+        condition: service_healthy
+    restart: unless-stopped
 
   incidentalert.management:
     image: ${DOCKER_REGISTRY-}incidentalert.management
     container_name: incidentalert.management
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5002
-      - FrontendUrl=http://localhost:3001
     build:
       context: .
       dockerfile: IncidentAlert-Management/Dockerfile
+    environment:
+      <<: [*broker-env, *jwt-env]
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ConnectionStrings__IncidentAlertManagementDB: Host=incidentalert.management.database;Port=5432;Database=incident_alert_management;Username=${MANAGEMENT_DB_USER:-incidentalertmanager};Password=${MANAGEMENT_DB_PASSWORD:-dev-management-db}
+      FrontendUrl: ${MANAGEMENT_FRONTEND_URL:-http://localhost:3001}
+      GoogleSettings__ClientId: ${GOOGLE_CLIENT_ID:-}
+      GoogleSettings__AllowedDomain: ${GOOGLE_ALLOWED_DOMAIN:-student.etf.unibl.org}
     ports:
       - "5002:5002"
-      - "5003:5003"
+    volumes:
+      - incidentalert-management-uploads:/app/wwwroot/uploads
     depends_on:
       incidentalert.management.database:
         condition: service_healthy
+      incidentalert-mq:
+        condition: service_healthy
+    restart: unless-stopped
 
   incidentalert.ml:
     image: ${DOCKER_REGISTRY-}incidentalert.ml
@@ -35,15 +64,16 @@ services:
     build:
       context: .
       dockerfile: IncidentAlert-ML/Dockerfile
+    environment:
+      <<: *jwt-env
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      IncidentAlertService__BaseUrl: http://incidentalert:5000
+      FrontendUrl: ${MANAGEMENT_FRONTEND_URL:-http://localhost:3001}
     ports:
       - "5004:5004"
-      - "5005:5005"
     depends_on:
-      incidentalert.database:
-        condition: service_healthy
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - FrontendUrl=http://localhost:3001
+      - incidentalert
+    restart: unless-stopped
 
   incidentalert.statistics:
     image: ${DOCKER_REGISTRY-}incidentalert.statistics
@@ -51,61 +81,73 @@ services:
     build:
       context: .
       dockerfile: IncidentAlert-Statistics/Dockerfile
+    environment:
+      <<: *jwt-env
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      IncidentAlertService__BaseUrl: http://incidentalert:5000
+      FrontendUrl: ${MANAGEMENT_FRONTEND_URL:-http://localhost:3001}
     ports:
       - "5006:5006"
-      - "5007:5007"
     depends_on:
-      incidentalert.database:
-        condition: service_healthy
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - FrontendUrl=http://localhost:3001
+      - incidentalert
+    restart: unless-stopped
 
   incidentalert.database:
-      image: postgres:15
-      container_name: incidentalert.database
-      environment:
-        - POSTGRES_DB=incident_alert
-        - POSTGRES_USER=incidentalertuser
-        - POSTGRES_PASSWORD=1nc1d3ntAl3rtUs3r$
-      volumes:
-        - incidentalert-db:/var/lib/postgresql/data
-      ports:
-        - 5432:5432
-      healthcheck:
-        test: ["CMD-SHELL", "pg_isready -U incidentalertuser -d incident_alert"]
-        interval: 5s
-        timeout: 5s
-        retries: 5
+    image: postgres:16-alpine
+    container_name: incidentalert.database
+    environment:
+      POSTGRES_DB: incident_alert
+      POSTGRES_USER: ${INCIDENT_DB_USER:-incidentalertuser}
+      POSTGRES_PASSWORD: ${INCIDENT_DB_PASSWORD:-dev-incidentalert-db}
+    volumes:
+      - incidentalert-db:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d incident_alert"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   incidentalert.management.database:
-      image: postgres:15
-      container_name: incidentalert.management.database
-      environment:
-        - POSTGRES_DB=incident_alert_mangment
-        - POSTGRES_USER=incidentalertmanager
-        - POSTGRES_PASSWORD=1nc1d3nta13rtmang3r
-      volumes:
-        - incidentalert-management-db:/var/lib/postgresql/data
-      ports:
-        - 5431:5432
-      healthcheck:
-        test: ["CMD-SHELL", "pg_isready -U incidentalertmanager -d incident_alert_mangment"]
-        interval: 5s
-        timeout: 5s
-        retries: 5
+    image: postgres:16-alpine
+    container_name: incidentalert.management.database
+    environment:
+      POSTGRES_DB: incident_alert_management
+      POSTGRES_USER: ${MANAGEMENT_DB_USER:-incidentalertmanager}
+      POSTGRES_PASSWORD: ${MANAGEMENT_DB_PASSWORD:-dev-management-db}
+    volumes:
+      - incidentalert-management-db:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5431:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d incident_alert_management"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
-  incidentaler.mq:
-      image: rabbitmq:latest
-      container_name: incidentaler.mq
-      hostname: incidentaler-mq
-      volumes:
-        - incidentalert-mq:/var/lib/rabbitmq
-      environment:
-          RABBITMQ_DEFAULT_USER: quest
-          RABBITMQ_DEFAULT_PASS: quest
+  incidentalert-mq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: incidentalert-mq
+    hostname: incidentalert-mq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-incidentalert}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-dev-rabbitmq}
+    volumes:
+      - incidentalert-mq:/var/lib/rabbitmq
+    ports:
+      # AMQP for services started from an IDE, and the management UI
+      - "127.0.0.1:5672:5672"
+      - "127.0.0.1:15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
 
 volumes:
   incidentalert-db:
   incidentalert-management-db:
   incidentalert-mq:
+  incidentalert-uploads:
+  incidentalert-management-uploads:

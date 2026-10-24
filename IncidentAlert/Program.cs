@@ -19,9 +19,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Model mapper
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
 // Database
 builder.Services.AddDbContext<DataContext>(
     o => o.UseNpgsql(builder.Configuration.GetConnectionString("IncidentAlertDB")));
@@ -85,6 +82,9 @@ builder.Services.AddMassTransit(busConfigurator =>
     });
 });
 
+// Liveness probe for Docker and the CI smoke test
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -95,9 +95,6 @@ if (app.Environment.IsDevelopment())
     app.ApplyMigrations();
     app.SeedData();
 }
-// Exception middleware
-app.UseMiddleware<ExceptionMiddleware>();
-
 // app.UseHttpsRedirection();
 // Use static files
 app.UseStaticFiles();
@@ -105,6 +102,13 @@ app.UseStaticFiles();
 //app.UseAuthorization();
 app.UseCors("AllowSpecificOrigin");
 
+// Exception middleware (after CORS, so error responses still reach the browser)
+app.UseMiddleware<ExceptionMiddleware>();
+
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();
+
+// Exposed so the integration tests can host the API with WebApplicationFactory<Program>.
+public partial class Program { }

@@ -56,7 +56,7 @@ namespace IncidentAlert_Management.Repositories.Implementation
         public async Task<Incident> Update(Incident incident)
         {
             _dataContext.Incidents.Update(incident);
-            await _dataContext.AddRangeAsync(incident);
+            await _dataContext.SaveChangesAsync();
             return incident;
         }
 

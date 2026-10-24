@@ -2,9 +2,10 @@
 {
     public enum OAuthResult
     {
+        /// <summary>A new account was created and waits for an administrator.</summary>
         Created,
         LoggedIn,
-        Failed
+        /// <summary>The account exists but has not been approved yet.</summary>
+        Pending,
     }
-
 }

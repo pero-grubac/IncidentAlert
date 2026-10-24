@@ -1,4 +1,5 @@
 ﻿using IncidentAlert_Management.Models.Dto;
+using IncidentAlert_Management.Models;
 using IncidentAlert_Management.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ namespace IncidentAlert_Management.Controllers
     {
         private readonly ICategoryService _service = categoryService;
 
-        [Authorize(Roles = "MODERATOR")]
+        [Authorize(Roles = AppRoles.Staff)]
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<CategoryDto>))]
         public async Task<IActionResult> GetAll()
@@ -25,7 +26,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(categories);
         }
 
-        [Authorize(Roles = "MODERATOR")]
+        [Authorize(Roles = AppRoles.Staff)]
         [HttpGet("{id:int}")]
         [ProducesResponseType(200, Type = typeof(CategoryDto))]
         [ProducesResponseType(400)]
@@ -39,7 +40,7 @@ namespace IncidentAlert_Management.Controllers
 
         }
 
-        [Authorize(Roles = "MODERATOR")]
+        [Authorize(Roles = AppRoles.Staff)]
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -54,7 +55,7 @@ namespace IncidentAlert_Management.Controllers
 
         }
 
-        [Authorize(Roles = "MODERATOR")]
+        [Authorize(Roles = AppRoles.Staff)]
         [HttpPut]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -69,7 +70,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(category);
         }
 
-        [Authorize(Roles = "MODERATOR")]
+        [Authorize(Roles = AppRoles.Staff)]
         [HttpDelete("{id:int}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]

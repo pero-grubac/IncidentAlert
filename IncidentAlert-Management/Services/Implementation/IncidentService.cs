@@ -1,19 +1,18 @@
-﻿using AutoMapper;
-using Contracts.Incident;
+﻿using Contracts.Incident;
 using IncidentAlert_Management.Exceptions;
 using IncidentAlert_Management.Models;
 using IncidentAlert_Management.Models.Dto;
 using IncidentAlert_Management.Repositories;
+using IncidentAlert_Management.Util;
 using MassTransit;
 
 namespace IncidentAlert_Management.Services.Implementation
 {
-    public class IncidentService(IMapper mapper, IIncidentRepository incidentRepository,
+    public class IncidentService(IIncidentRepository incidentRepository,
         ILocationRepository locationRepository, ICategoryRepository categoryRepository,
         IIncidentCategoryRepository incidentCategoryRepository, IImageService imageService,
          IPublishEndpoint publishEndpoint) : IIncidentService
     {
-        private readonly IMapper _mapper = mapper;
         private readonly IIncidentRepository _repository = incidentRepository;
         private readonly ILocationRepository _locationRepository = locationRepository;
         private readonly ICategoryRepository _categoryRepository = categoryRepository;
@@ -28,24 +27,11 @@ namespace IncidentAlert_Management.Services.Implementation
                 throw new EntityCanNotBeCreatedException("Incident needs to belong to a category");
             };
 
-            var invalidCategoryTasks = incidentDto.Categories.Select(async c =>
+            foreach (var categoryName in incidentDto.Categories)
             {
-                var exists = await _categoryRepository.Exists(category => category.Name == c);
-                return new { Category = c, Exists = exists };
-            }).ToList();
-
-            var invalidCategoriesResults = await Task.WhenAll(invalidCategoryTasks);
-
-            // Filtrirajte one koje ne postoje
-            var invalidCategories = invalidCategoriesResults
-                .Where(result => !result.Exists)
-                .Select(result => result.Category)
-                .ToList();
-
-            if (invalidCategories.Count != 0)
-            {
-                throw new EntityCanNotBeCreatedException("One or more categories do not exist.");
-            };
+                if (!await _categoryRepository.Exists(category => category.Name == categoryName))
+                    throw new EntityCanNotBeCreatedException("One or more categories do not exist.");
+            }
 
             incidentDto.DateTime = incidentDto.DateTime.ToUniversalTime();
 
@@ -54,7 +40,7 @@ namespace IncidentAlert_Management.Services.Implementation
             Location location;
             if (!locationExists)
             {
-                location = await _locationRepository.Add(_mapper.Map<LocationDto, Location>(incidentDto.Location));
+                location = await _locationRepository.Add(NewLocation(incidentDto.Location));
             }
             else
             {
@@ -71,23 +57,28 @@ namespace IncidentAlert_Management.Services.Implementation
             };
             var incident = await _repository.Add(newIncident);
 
-            var incidentCategoriesTasks = incidentDto.Categories.Select(async item =>
+            // Sequential on purpose: the repositories share one DbContext, which is not thread-safe.
+            foreach (var item in incidentDto.Categories)
             {
                 var category = await _categoryRepository.Find(c => c.Name == item);
-
-                var incidentCategory = new IncidentCategory
+                await _incidentCategoryRepository.Add(new IncidentCategory
                 {
                     IncidentId = incident.Id,
                     CategoryId = category!.Id
-                };
-                await _incidentCategoryRepository.Add(incidentCategory);
-            });
+                });
+            }
 
-            await Task.WhenAll(incidentCategoriesTasks);
-            // Create Images
-            if (incidentDto.ImagesData.Count > 0)
-                await Task.WhenAll(incidentDto.ImagesData.Select(async item => await _imageService.Add(item, incident.Id)).ToList());
+            foreach (var image in incidentDto.ImagesData)
+                await _imageService.Add(image, incident.Id);
 
+        }
+
+        // A new place gets its own id here, whatever the id it had in the IncidentAlert service.
+        private static Location NewLocation(LocationDto dto)
+        {
+            var location = dto.ToEntity();
+            location.Id = 0;
+            return location;
         }
 
         public async Task Delete(int id)
@@ -97,7 +88,8 @@ namespace IncidentAlert_Management.Services.Implementation
             {
                 await _incidentCategoryRepository.DeleteAllWithIncidentId(id);
                 var images = await _imageService.GetAllByIncidentId(id);
-                await Task.WhenAll(images.Select(async item => await _imageService.Delete(item.Id)).ToList());
+                foreach (var image in images.ToList())
+                    await _imageService.Delete(image.Id);
                 await _repository.Delete(entity);
 
             }
@@ -109,8 +101,8 @@ namespace IncidentAlert_Management.Services.Implementation
 
         public async Task<IEnumerable<ResponseIncidentDto>> GetAllInDateRange(DateTime startDate, DateTime endDate)
         {
-            var incidents = _mapper.Map<IEnumerable<Incident>, IEnumerable<ResponseIncidentDto>>
-                  (await _repository.GetAllInDateRange(startDate.ToUniversalTime(), endDate.ToUniversalTime()));
+            var incidents = (await _repository.GetAllInDateRange(startDate.ToUniversalTime(), endDate.ToUniversalTime()))
+                .Select(i => i.ToResponse()).ToList();
             var response = await MapImageNames(incidents);
             return response;
         }
@@ -118,32 +110,32 @@ namespace IncidentAlert_Management.Services.Implementation
 
         public async Task<IEnumerable<ResponseIncidentDto>> GetAllOnDate(DateTime date)
         {
-            var incidents = _mapper.Map<IEnumerable<Incident>, IEnumerable<ResponseIncidentDto>>
-                  (await _repository.GetAllOnDate(date.ToUniversalTime()));
+            var incidents = (await _repository.GetAllOnDate(date.ToUniversalTime()))
+                .Select(i => i.ToResponse()).ToList();
             var response = await MapImageNames(incidents);
             return response;
         }
 
         public async Task<IEnumerable<ResponseIncidentDto>> GetAllByCategoryName(string categoryName)
         {
-            var incidents = _mapper.Map<IEnumerable<Incident>, IEnumerable<ResponseIncidentDto>>
-                  (await _repository.GetAllByCategoryName(categoryName));
+            var incidents = (await _repository.GetAllByCategoryName(categoryName))
+                .Select(i => i.ToResponse()).ToList();
             var response = await MapImageNames(incidents);
             return response;
         }
 
         public async Task<IEnumerable<ResponseIncidentDto>> GetAllByLocationName(string locationName)
         {
-            var incidents = _mapper.Map<IEnumerable<Incident>, IEnumerable<ResponseIncidentDto>>
-                  (await _repository.GetAllByLocationName(locationName));
+            var incidents = (await _repository.GetAllByLocationName(locationName))
+                .Select(i => i.ToResponse()).ToList();
             var response = await MapImageNames(incidents);
             return response;
         }
 
         public async Task<IEnumerable<ResponseIncidentDto>> GetAll()
         {
-            var incidents = _mapper.Map<IEnumerable<Incident>, IEnumerable<ResponseIncidentDto>>
-                (await _repository.GetAll());
+            var incidents = (await _repository.GetAll())
+                .Select(i => i.ToResponse()).ToList();
             var response = await MapImageNames(incidents);
             return response;
         }
@@ -158,7 +150,7 @@ namespace IncidentAlert_Management.Services.Implementation
         public async Task<IEnumerable<ResponseIncidentDto>> GetByCategoryId(int categoryId)
         {
             var incidents = await _repository.GetAllByCategoryId(categoryId);
-            var response = await MapImageNames(_mapper.Map<IEnumerable<Incident>, IEnumerable<ResponseIncidentDto>>(incidents));
+            var response = await MapImageNames(incidents.Select(i => i.ToResponse()).ToList());
             return response;
         }
 
@@ -167,7 +159,7 @@ namespace IncidentAlert_Management.Services.Implementation
             var incident = await _repository.GetById(id);
             var response = incident == null ?
                    throw new EntityDoesNotExistException($"Incident with id {id} does not exists.") :
-                   _mapper.Map<Incident, ResponseIncidentDto>(incident);
+                   incident.ToResponse();
             response.Images = await _imageService.GetImageNames(id) ?? [];
             return response;
         }
@@ -182,8 +174,15 @@ namespace IncidentAlert_Management.Services.Implementation
             if (!await _repository.Exists(i => i.Id == incidentDto.Id))
                 throw new EntityDoesNotExistException($"Incident with id {id} does not exists.");
 
-            var incident = await _repository.Update(_mapper.Map<IncidentDto, Incident>(incidentDto));
-            return _mapper.Map<Incident, IncidentDto>(incident);
+            // Change the tracked entity instead of attaching a second copy of it.
+            var incident = (await _repository.GetById(id))!;
+            incident.Title = incidentDto.Title;
+            incident.Text = incidentDto.Text;
+            incident.DateTime = incidentDto.DateTime.ToUniversalTime();
+            if (incidentDto.Location is { Id: > 0 })
+                incident.LocationId = incidentDto.Location.Id;
+
+            return (await _repository.Update(incident)).ToDto();
         }
 
         public async Task<ResponseIncidentDto> ChnageStatus(int id, string status)
@@ -195,11 +194,14 @@ namespace IncidentAlert_Management.Services.Implementation
             var incident = await _repository.GetById(id) ?? throw new EntityDoesNotExistException($"Incident with id {id} doesnt exist");
 
             var statusEnum = (StatusEnum)statusEnumObj;
+            // Accepting goes through Approve, which also publishes the incident.
+            if (statusEnum == StatusEnum.ACCEPTED)
+                throw new ArgumentException("Use Approve to publish an incident.");
 
             incident.Status = statusEnum;
             await _repository.Update(incident);
 
-            return _mapper.Map<Incident, ResponseIncidentDto>(incident);
+            return incident.ToResponse();
         }
 
         public async Task Approve(int id)
@@ -207,11 +209,9 @@ namespace IncidentAlert_Management.Services.Implementation
             if (!await _repository.Exists(i => i.Id == id))
                 throw new EntityDoesNotExistException($"Incident with id {id} does not exists.");
 
-            var incident = await _repository.GetById(id);
-            var approvedIncident = _mapper.Map<Incident, IncidentApprovedEvent>(incident!);
-            approvedIncident.Categories = incident.IncidentCategories.Select(ic => ic.Category.Name).ToList();
-            approvedIncident.ImagesData = _mapper.Map<ICollection<Models.Dto.ImageData>,
-                ICollection<Contracts.Image.ImageData>>(await _imageService.GetImageData(id));
+            var incident = (await _repository.GetById(id))!;
+            var approvedIncident = incident.ToApprovedEvent();
+            approvedIncident.ImagesData = (await _imageService.GetImageData(id)).Select(i => i.ToMessage()).ToList();
 
             await _publishEndpoint.Publish(approvedIncident);
 

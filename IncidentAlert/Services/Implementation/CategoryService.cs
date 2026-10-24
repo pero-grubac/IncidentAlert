@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using IncidentAlert.Exceptions;
+﻿using IncidentAlert.Exceptions;
 using IncidentAlert.Models;
 using IncidentAlert.Models.Dto;
 using IncidentAlert.Repositories;
@@ -8,9 +7,8 @@ using System.Linq.Expressions;
 
 namespace IncidentAlert.Services.Implementation
 {
-    public class CategoryService(IMapper mapper, ICategoryRepository categoryRepository) : ICategoryService
+    public class CategoryService(ICategoryRepository categoryRepository) : ICategoryService
     {
-        private readonly IMapper _mapper = mapper;
         private readonly ICategoryRepository _repository = categoryRepository;
         public async Task<CategoryDto> Add(CategoryDto categoryDto)
         {
@@ -18,8 +16,8 @@ namespace IncidentAlert.Services.Implementation
             if (exists)
                 throw new InvalidOperationException("Category already exists");
 
-            var category = await _repository.Add(_mapper.Map<CategoryDto, Category>(categoryDto));
-            return _mapper.Map<Category, CategoryDto>(category);
+            var category = await _repository.Add(categoryDto.ToEntity());
+            return category.ToDto();
         }
 
         public async Task Delete(int id)
@@ -39,17 +37,17 @@ namespace IncidentAlert.Services.Implementation
         {
             var predicate = MapPredicate(predicateDto);
             var categories = await _repository.FindAll(predicate);
-            return categories.Select(category => _mapper.Map<CategoryDto>(category));
+            return categories.Select(category => category.ToDto());
         }
 
-        public async Task<IEnumerable<CategoryDto>> GetAll() => _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryDto>>(await _repository.GetAll());
+        public async Task<IEnumerable<CategoryDto>> GetAll() => (await _repository.GetAll()).Select(c => c.ToDto()).ToList();
 
         public async Task<CategoryDto?> GetById(int id)
         {
             var category = await _repository.GetById(id);
             return category == null ?
               throw new EntityDoesNotExistException($"Category with id {id} does not exists.") :
-                _mapper.Map<Category, CategoryDto>(category);
+                category.ToDto();
         }
         // TODO delete
         public Expression<Func<Category, bool>> MapPredicate(Expression<Func<CategoryDto, bool>> predicateDto)
@@ -65,9 +63,9 @@ namespace IncidentAlert.Services.Implementation
             if (!await _repository.Exists(c => c.Id == categoryDto.Id))
                 throw new EntityDoesNotExistException($"Category with id {categoryDto.Id} does not exists.");
 
-            var updatedCategory = await _repository.Update(_mapper.Map<CategoryDto, Category>(categoryDto));
+            var updatedCategory = await _repository.Update(categoryDto.ToEntity());
 
-            return _mapper.Map<Category, CategoryDto>(updatedCategory);
+            return updatedCategory.ToDto();
         }
 
 

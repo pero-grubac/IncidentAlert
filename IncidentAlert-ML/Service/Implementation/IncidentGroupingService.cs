@@ -5,9 +5,16 @@ namespace IncidentAlert_ML.Service.Implementation
 {
     public class IncidentGroupingService : IIncidentGroupingService
     {
-        public async Task<List<IncidentGroup>> GroupIncidentsByText(List<SimpleIncident> incidents)
+        public const int MaxClusters = 5;
+
+        public Task<List<IncidentGroup>> GroupIncidentsByText(List<SimpleIncident> incidents)
         {
-            var mlContext = new MLContext();
+            // KMeans cannot build more clusters than there are rows.
+            if (incidents.Count == 0)
+                return Task.FromResult(new List<IncidentGroup>());
+
+            // A fixed seed keeps the grouping stable between requests for the same data.
+            var mlContext = new MLContext(seed: 1);
 
             // Step 1: Project the data to only include the `Text` field
             var textData = incidents.Select(incident => new { Text = incident.Text }).ToList();
@@ -25,7 +32,7 @@ namespace IncidentAlert_ML.Service.Implementation
             // Step 5: Use KMeans clustering to group similar texts
             var options = new Microsoft.ML.Trainers.KMeansTrainer.Options
             {
-                NumberOfClusters = 5,
+                NumberOfClusters = Math.Min(MaxClusters, incidents.Count),
                 FeatureColumnName = "Features"
             };
             var trainer = mlContext.Clustering.Trainers.KMeans(options);
@@ -47,7 +54,7 @@ namespace IncidentAlert_ML.Service.Implementation
                 groupedIncidents.First(g => g.GroupKey == $"Cluster {clusterId}").Incidents.Add(incidents[i]);
             }
 
-            return groupedIncidents;
+            return Task.FromResult(groupedIncidents);
         }
 
     }

@@ -34,7 +34,8 @@ namespace IncidentAlert.Services.Implementation
                     throw new DirectoryCreationException("Could not create directory for uploads", ex);
                 }
             }
-            var filePath = Path.Combine(uploadsFolderPath, file.FileName);
+            var fileName = SafeFileName(file.FileName);
+            var filePath = Path.Combine(uploadsFolderPath, fileName);
             try
             {
                 using var stream = new FileStream(filePath, FileMode.Create);
@@ -46,7 +47,7 @@ namespace IncidentAlert.Services.Implementation
             }
             var image = new Image
             {
-                FilePath = $"/uploads/{incidentId}/{file.FileName}",
+                FilePath = $"/uploads/{incidentId}/{fileName}",
                 IncidentId = incidentId
             };
             await _imageRepository.Add(image);
@@ -72,7 +73,8 @@ namespace IncidentAlert.Services.Implementation
                     throw new DirectoryCreationException("Could not create directory for uploads", ex);
                 }
             }
-            var filePath = Path.Combine(uploadsFolderPath, file.FileName);
+            var fileName = SafeFileName(file.FileName);
+            var filePath = Path.Combine(uploadsFolderPath, fileName);
             try
             {
                 await File.WriteAllBytesAsync(filePath, file.Content);
@@ -83,7 +85,7 @@ namespace IncidentAlert.Services.Implementation
             }
             var image = new Image
             {
-                FilePath = $"/uploads/{incidentId}/{file.FileName}",
+                FilePath = $"/uploads/{incidentId}/{fileName}",
                 IncidentId = incidentId
             };
             await _imageRepository.Add(image);
@@ -136,6 +138,15 @@ namespace IncidentAlert.Services.Implementation
             }).ToList();
 
             return imageUrls;
+        }
+
+        // Keeps only the last path segment, so a name like "../../appsettings.json" cannot leave the uploads folder.
+        public static string SafeFileName(string fileName)
+        {
+            var name = Path.GetFileName(fileName.Replace('\\', '/'));
+            if (string.IsNullOrWhiteSpace(name) || name is "." or "..")
+                throw new FileEmptyException("File name is not valid");
+            return name;
         }
     }
 }

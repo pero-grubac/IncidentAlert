@@ -8,7 +8,7 @@ namespace IncidentAlert_Management.Controllers
     [Route("[controller]")]
     public class StatusController : ControllerBase
     {
-        [Authorize(Roles = "MODERATOR")]
+        [Authorize(Roles = AppRoles.Staff)]
         [HttpGet]
         public IActionResult GetAll()
         {

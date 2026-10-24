@@ -1,4 +1,5 @@
 ﻿using IncidentAlert_Management.Models.Dto;
+using IncidentAlert_Management.Models;
 using IncidentAlert_Management.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,7 @@ namespace IncidentAlert_Management.Controllers
     {
         private readonly IIncidentService _service = incidentService;
 
-        [Authorize(Roles = "MODERATOR")]
+        [Authorize(Roles = AppRoles.Staff)]
         [HttpGet("getAll")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<ResponseIncidentDto>))]
         public async Task<IActionResult> GetAll()
@@ -24,7 +25,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(incidents);
         }
 
-        [Authorize(Roles = "MODERATOR")]
+        [Authorize(Roles = AppRoles.Staff)]
         [HttpGet("getByCategoryId/{id:int}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<ResponseIncidentDto>))]
         public async Task<IActionResult> GetByCategeoryId(int id)
@@ -37,7 +38,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(incidents);
         }
 
-        [Authorize(Roles = "MODERATOR")]
+        [Authorize(Roles = AppRoles.Staff)]
         [HttpGet("{id:int}")]
         [ProducesResponseType(200, Type = typeof(ResponseIncidentDto))]
         public async Task<IActionResult> GetById(int id)
@@ -50,7 +51,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(incidents);
         }
 
-        [Authorize(Roles = "MODERATOR")]
+        [Authorize(Roles = AppRoles.Staff)]
         [HttpGet("GetByCategoryName/{name}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<ResponseIncidentDto>))]
         public async Task<IActionResult> GetAllByCategoryName(string name)
@@ -63,7 +64,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(incidents);
         }
 
-        [Authorize(Roles = "MODERATOR")]
+        [Authorize(Roles = AppRoles.Staff)]
         [HttpGet("GetAllOnDate/{date:datetime}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<ResponseIncidentDto>))]
         public async Task<IActionResult> GetAllOnDate(DateTime date)
@@ -76,7 +77,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(incidents);
         }
 
-        [Authorize(Roles = "MODERATOR")]
+        [Authorize(Roles = AppRoles.Staff)]
         [HttpGet("GetAllInDateRange")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<ResponseIncidentDto>))]
         public async Task<IActionResult> GetAllInDateRange([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
@@ -88,7 +89,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(incidents);
         }
 
-        [Authorize(Roles = "MODERATOR")]
+        [Authorize(Roles = AppRoles.Staff)]
         [HttpGet("GetAllByLocationName/{name}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<ResponseIncidentDto>))]
         public async Task<IActionResult> GetAllByLocationName(string name)
@@ -100,7 +101,7 @@ namespace IncidentAlert_Management.Controllers
 
             return Ok(incidents);
         }
-        //TREBABACE endpoint  izmjeniti tako da koristik moze da ga kreira
+        [Authorize(Roles = AppRoles.Staff)]
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -115,7 +116,7 @@ namespace IncidentAlert_Management.Controllers
 
         }
 
-        [Authorize(Roles = "MODERATOR")]
+        [Authorize(Roles = AppRoles.Staff)]
         [HttpPut("{id:int}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -130,7 +131,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok(category);
         }
 
-        [Authorize(Roles = "MODERATOR")]
+        [Authorize(Roles = AppRoles.Staff)]
         [HttpDelete("{id:int}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
@@ -144,7 +145,7 @@ namespace IncidentAlert_Management.Controllers
             return Ok("Succesfully deleted");
         }
 
-        [Authorize(Roles = "MODERATOR")]
+        [Authorize(Roles = AppRoles.Staff)]
         [HttpPut("Approve/{id:int}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
@@ -158,7 +159,8 @@ namespace IncidentAlert_Management.Controllers
             return Ok("Succesfully approved");
         }
 
-        [Authorize(Roles = "MODERATOR")]
+        // Kept as DELETE for compatibility with the existing clients. Body: "PENDING" or "REJECTED".
+        [Authorize(Roles = AppRoles.Staff)]
         [HttpDelete("ChangeStatus/{id:int}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]

@@ -1,62 +1,51 @@
 ﻿using IncidentAlert_Management.Models;
 using IncidentAlert_Management.Models.Dto;
 using IncidentAlert_Management.Services;
+using IncidentAlert_Management.Services.Implementation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.RegularExpressions;
 
 namespace IncidentAlert_Management.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class LoginController(IUserService userService) : ControllerBase
     {
         private readonly IUserService _userService = userService;
 
         [HttpPost]
-        [ProducesResponseType(204)]
+        [ProducesResponseType(200, Type = typeof(string))]
         [ProducesResponseType(400)]
-        [AllowAnonymous]
+        [ProducesResponseType(403)]
         public async Task<IActionResult> Login([FromBody] LoginDto user)
         {
             if (user == null || !ModelState.IsValid)
                 return BadRequest(ModelState);
-            var jwt = await _userService.Login(user);
-            return Ok(jwt);
+
+            return Ok(await _userService.Login(user));
         }
 
-
+        /// <summary>Sign-in with a Google ID token. 201: account created and waiting for approval; 403: still waiting.</summary>
         [HttpPost("oauth")]
-        [ProducesResponseType(204)]
+        [ProducesResponseType(200, Type = typeof(string))]
+        [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        [AllowAnonymous]
-        public async Task<IActionResult> LoginOAuth([FromBody] OAuth data)
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> LoginOAuth([FromBody] GoogleLoginDto data)
         {
+            if (string.IsNullOrWhiteSpace(data?.IdToken))
+                return BadRequest("A Google ID token is required.");
 
-            var username = Regex.Replace(data.Username!, @"[^a-zA-Z0-9]", "");
-
-            if (string.IsNullOrWhiteSpace(data.Email) || string.IsNullOrWhiteSpace(data.GoogleId)
-                        || string.IsNullOrWhiteSpace(username))
-                return BadRequest();
-
-            if (!data.Email.EndsWith("@student.etf.unibl.org"))
-                return BadRequest("Email domain not allowed.");
-
-
-            var oauth = new OAuth
-            {
-                GoogleId = data.GoogleId!,
-                Email = data.Email!,
-                Username = username!
-            };
-            var (result, token) = await _userService.OAuth(oauth);
+            var (result, token) = await _userService.LoginWithGoogle(data.IdToken);
 
             return result switch
             {
-                OAuthResult.Created => CreatedAtAction(nameof(LoginOAuth), new { /* include relevant info */ }),
-                OAuthResult.Failed => BadRequest("OAuth failed. Please try again."),
-                OAuthResult.LoggedIn => Ok(token), // Return JWT for existing user
-                _ => BadRequest("Unknown error occurred.")
+                OAuthResult.LoggedIn => Ok(token),
+                OAuthResult.Created => StatusCode(StatusCodes.Status201Created,
+                    "Account created. An administrator has to approve it before you can sign in."),
+                _ => StatusCode(StatusCodes.Status403Forbidden, UserService.PendingMessage),
             };
         }
     }

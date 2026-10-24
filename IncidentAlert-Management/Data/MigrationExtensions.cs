@@ -49,11 +49,11 @@ namespace IncidentAlert_Management.Data
             var incidents = new List<Incident>
             {
                 new() { Title = "Fire in city center", Text = "A fire broke out in the city center.", DateTime = DateTime.UtcNow.AddDays(-10), LocationId = locations[0].Id, Status = StatusEnum.PENDING, IncidentCategories = [new() { CategoryId = categories[0].Id }] },
-                new() { Title = "Road flooding", Text = "Heavy flooding on main road.", DateTime = DateTime.UtcNow.AddDays(-9), LocationId = locations[1].Id, Status = StatusEnum.ACCEPTED, IncidentCategories = [new() { CategoryId = categories[1].Id }] },
+                new() { Title = "Road flooding", Text = "Heavy flooding on main road.", DateTime = DateTime.UtcNow.AddDays(-9), LocationId = locations[1].Id, Status = StatusEnum.PENDING, IncidentCategories = [new() { CategoryId = categories[1].Id }] },
                 new() { Title = "Highway accident", Text = "Multiple vehicle accident on highway.", DateTime = DateTime.UtcNow.AddDays(-8), LocationId = locations[2].Id, Status = StatusEnum.REJECTED, IncidentCategories = [new() { CategoryId = categories[2].Id }] },
-                new() { Title = "Bank robbery", Text = "Robbery at local bank.", DateTime = DateTime.UtcNow.AddDays(-7), LocationId = locations[3].Id, Status = StatusEnum.ACCEPTED, IncidentCategories = [new() { CategoryId = categories[3].Id }] },
+                new() { Title = "Bank robbery", Text = "Robbery at local bank.", DateTime = DateTime.UtcNow.AddDays(-7), LocationId = locations[3].Id, Status = StatusEnum.PENDING, IncidentCategories = [new() { CategoryId = categories[3].Id }] },
                 new() { Title = "Gas leak", Text = "Gas leak in residential building.", DateTime = DateTime.UtcNow.AddDays(-6), LocationId = locations[4].Id, Status = StatusEnum.PENDING, IncidentCategories = [new() { CategoryId = categories[4].Id }] },
-                new() { Title = "Forest fire", Text = "Forest fire near national park.", DateTime = DateTime.UtcNow.AddDays(-5), LocationId = locations[1].Id, Status = StatusEnum.ACCEPTED, IncidentCategories = [new() { CategoryId = categories[0].Id }] },
+                new() { Title = "Forest fire", Text = "Forest fire near national park.", DateTime = DateTime.UtcNow.AddDays(-5), LocationId = locations[1].Id, Status = StatusEnum.PENDING, IncidentCategories = [new() { CategoryId = categories[0].Id }] },
                 new() { Title = "Bridge closure", Text = "Bridge closed due to flooding.", DateTime = DateTime.UtcNow.AddDays(-4), LocationId = locations[2].Id, Status = StatusEnum.PENDING, IncidentCategories = [new() { CategoryId = categories[1].Id }] },
             };
             dataContext.Incidents.AddRange(incidents);

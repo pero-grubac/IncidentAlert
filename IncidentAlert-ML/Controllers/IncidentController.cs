@@ -1,10 +1,12 @@
 ﻿using IncidentAlert_ML.Model;
 using IncidentAlert_ML.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IncidentAlert_ML.Controllers
 {
     [ApiController]
+    [Authorize(Roles = "MODERATOR,ADMIN")]
     [Route("[controller]")]
     public class IncidentController(IHttpClientFactory httpClientFactory, IIncidentGroupingService incidentGroupingService)
         : ControllerBase

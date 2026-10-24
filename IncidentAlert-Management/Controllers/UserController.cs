@@ -1,42 +1,48 @@
-﻿using IncidentAlert_Management.Models.Dto;
+﻿using IncidentAlert_Management.Models;
+using IncidentAlert_Management.Models.Dto;
 using IncidentAlert_Management.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace IncidentAlert_Management.Controllers
 {
+    /// <summary>Account administration: approving new moderators.</summary>
     [Route("users")]
     [ApiController]
-    [Authorize(Roles = "ADMIN")]
-
+    [Authorize(Roles = AppRoles.Admin)]
     public class UserController(IUserService userService) : ControllerBase
     {
         private readonly IUserService _userService = userService;
 
-        [HttpPost("register")]
+        // The JWT's "sub" claim holds the username.
+        private string CurrentUsername =>
+            User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub") ?? string.Empty;
+
+        [HttpGet]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<UserDto>))]
+        public async Task<IActionResult> GetAll() => Ok(await _userService.GetAll());
+
+        [HttpPut("{id}/approve")]
+        [ProducesResponseType(200, Type = typeof(UserDto))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> Approve(string id) => Ok(await _userService.Approve(id, CurrentUsername));
+
+        [HttpPut("{id}/revoke")]
+        [ProducesResponseType(200, Type = typeof(UserDto))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> Revoke(string id) => Ok(await _userService.Revoke(id, CurrentUsername));
+
+        [HttpDelete("{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        [AllowAnonymous]
-        public async Task<IActionResult> Create([FromBody] CreateUserDto newUser)
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> Delete(string id)
         {
-            if (newUser == null || !ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            await _userService.Add(newUser);
-            return Ok("Succesfully created");
+            await _userService.Delete(id, CurrentUsername);
+            return NoContent();
         }
-
-        [HttpPost("login")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginDto user)
-        {
-            if (user == null || !ModelState.IsValid)
-                return BadRequest(ModelState);
-            var jwt = await _userService.Login(user);
-            return Ok(jwt);
-        }
-        //TODO getall,approve,delete
     }
 }

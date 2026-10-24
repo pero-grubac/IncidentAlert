@@ -1,20 +1,19 @@
-﻿using AutoMapper;
-using Contracts.Category;
+﻿using Contracts.Category;
 using IncidentAlert.Models.Dto;
 using IncidentAlert.Services;
+using IncidentAlert.Util;
 using MassTransit;
 
 namespace IncidentAlert.Consumers.CategoryConsumers
 {
-    public sealed class CategoryCreatedConsumer(IMapper mapper, ICategoryService service)
+    public sealed class CategoryCreatedConsumer(ICategoryService service)
         : IConsumer<CategoryCreatedEvent>
     {
-        private readonly IMapper _mapper = mapper;
         private readonly ICategoryService _service = service;
 
         public async Task Consume(ConsumeContext<CategoryCreatedEvent> context)
         {
-            await _service.Add(_mapper.Map<CategoryCreatedEvent, CategoryDto>(context.Message));
+            await _service.Add(context.Message.ToDto());
         }
     }
 }

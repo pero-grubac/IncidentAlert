@@ -1,48 +1,7 @@
+# Local tweaks for the Visual Studio Docker Compose launch profile.
+# `docker compose up` merges this file automatically, so keep it free of
+# anything machine-specific (certificates, user secrets, absolute paths).
 services:
   incidentalert:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5000
-      - ASPNETCORE_HTTPS_PORTS=5001
-    ports:
-      - "5000:5000"
-      - "5001:5001"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
-
-  incidentalert.management:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5002
-      - ASPNETCORE_HTTPS_PORTS=5003
-    ports:
-      - "5002:5002"
-      - "5003:5003"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
-
-  incidentalert.ml:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5004
-      - ASPNETCORE_HTTPS_PORTS=5005
-    ports:
-      - "5004:5004"
-      - "5005:5005"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
-
-  incidentalert.statistics:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5006
-      - ASPNETCORE_HTTPS_PORTS=5007
-    ports:
-      - "5006:5006"
-      - "5007:5007"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    labels:
+      com.microsoft.visual-studio.project-name: IncidentAlert

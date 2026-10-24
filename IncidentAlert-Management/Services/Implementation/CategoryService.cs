@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Contracts.Category;
+﻿using Contracts.Category;
 using IncidentAlert_Management.Exceptions;
 using IncidentAlert_Management.Models;
 using IncidentAlert_Management.Models.Dto;
@@ -10,10 +9,9 @@ using System.Linq.Expressions;
 
 namespace IncidentAlert_Management.Services.Implementation
 {
-    public class CategoryService(IMapper mapper, ICategoryRepository categoryRepository,
+    public class CategoryService(ICategoryRepository categoryRepository,
         IPublishEndpoint publishEndpoint) : ICategoryService
     {
-        private readonly IMapper _mapper = mapper;
         private readonly ICategoryRepository _repository = categoryRepository;
         private readonly IPublishEndpoint _publishEndpoint = publishEndpoint;
         public async Task<CategoryDto> Add(string name)
@@ -27,9 +25,9 @@ namespace IncidentAlert_Management.Services.Implementation
                 Name = name,
             });
 
-            await _publishEndpoint.Publish(_mapper.Map<Category, CategoryCreatedEvent>(category));
+            await _publishEndpoint.Publish(category.ToCreatedEvent());
 
-            return _mapper.Map<Category, CategoryDto>(category);
+            return category.ToDto();
         }
 
         public async Task Delete(int id)
@@ -38,7 +36,7 @@ namespace IncidentAlert_Management.Services.Implementation
             try
             {
                 await _repository.Delete(entity);
-                await _publishEndpoint.Publish(_mapper.Map<Category, CategoryDeleteEvent>(entity));
+                await _publishEndpoint.Publish(entity.ToDeleteEvent());
             }
             catch (Exception ex)
             {
@@ -50,17 +48,17 @@ namespace IncidentAlert_Management.Services.Implementation
         {
             var predicate = MapPredicate(predicateDto);
             var categories = await _repository.FindAll(predicate);
-            return categories.Select(category => _mapper.Map<CategoryDto>(category));
+            return categories.Select(category => category.ToDto());
         }
 
-        public async Task<IEnumerable<CategoryDto>> GetAll() => _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryDto>>(await _repository.GetAll());
+        public async Task<IEnumerable<CategoryDto>> GetAll() => (await _repository.GetAll()).Select(c => c.ToDto()).ToList();
 
         public async Task<CategoryDto?> GetById(int id)
         {
             var category = await _repository.GetById(id);
             return category == null ?
               throw new EntityDoesNotExistException($"Category with id {id} does not exists.") :
-                _mapper.Map<Category, CategoryDto>(category);
+                category.ToDto();
         }
         // TODO delete
         public Expression<Func<Category, bool>> MapPredicate(Expression<Func<CategoryDto, bool>> predicateDto)
@@ -77,11 +75,11 @@ namespace IncidentAlert_Management.Services.Implementation
             if (!await _repository.Exists(c => c.Id == categoryDto.Id))
                 throw new EntityDoesNotExistException($"Category with id {categoryDto.Id} does not exists.");
 
-            var updatedCategory = await _repository.Update(_mapper.Map<CategoryDto, Category>(categoryDto));
+            var updatedCategory = await _repository.Update(categoryDto.ToEntity());
 
-            await _publishEndpoint.Publish(_mapper.Map<Category, CategoryUpdateEvent>(updatedCategory));
+            await _publishEndpoint.Publish(updatedCategory.ToUpdateEvent());
 
-            return _mapper.Map<Category, CategoryDto>(updatedCategory);
+            return updatedCategory.ToDto();
         }
 
 

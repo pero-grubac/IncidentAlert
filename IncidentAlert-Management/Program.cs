@@ -1,6 +1,7 @@
 ﻿using IncidentAlert_Management.Consumers.IncidentConsumers;
 using IncidentAlert_Management.Data;
 using IncidentAlert_Management.JWT;
+using IncidentAlert_Management.Middleware;
 using IncidentAlert_Management.Models;
 using IncidentAlert_Management.Models.Dto;
 using IncidentAlert_Management.Repositories;
@@ -46,9 +47,6 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-
-// Model mapper
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Database
 builder.Services.AddDbContext<DataContext>(
@@ -98,12 +96,13 @@ builder.Host.UseSerilog((context, loggerConfig) =>
 
 // Security
 var jwtSettingsSection = builder.Configuration.GetSection("JwtSettings");
-var jwtSettings = jwtSettingsSection.Get<JwtSettings>();
+var jwtSettings = jwtSettingsSection.Get<JwtSettings>() ?? new JwtSettings();
+JwtSettings.Validate(jwtSettings, builder.Environment);
 builder.Services.AddSingleton(jwtSettings);
 
-var googleSettingsSection = builder.Configuration.GetSection("GoogleSettings");
-var googleSettings = googleSettingsSection.Get<GoogleSettings>();
+var googleSettings = builder.Configuration.GetSection("GoogleSettings").Get<GoogleSettings>() ?? new GoogleSettings();
 builder.Services.AddSingleton(googleSettings);
+builder.Services.AddSingleton<IGoogleTokenValidator, GoogleTokenValidator>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -120,16 +119,13 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings!.Issuer,
+        ValidIssuer = jwtSettings.Issuer,
         ValidAudience = jwtSettings.Audience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
 
     };
 });
 
-
-// Model mapper
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Repository
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -172,6 +168,9 @@ builder.Services.AddMassTransit(busConfigurator =>
     });
 });
 
+// Liveness probe for Docker and the CI smoke test
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -180,7 +179,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.ApplyMigrations();
-    app.SeedData();
+    await app.SeedData();
 }
 
 // app.UseHttpsRedirection();
@@ -190,9 +189,16 @@ app.UseStaticFiles();
 
 app.UseCors("AllowSpecificOrigin");
 
+// Exception middleware (after CORS, so error responses still reach the browser)
+app.UseMiddleware<ExceptionMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();
+
+// Exposed so the integration tests can host the API with WebApplicationFactory<Program>.
+public partial class Program { }
