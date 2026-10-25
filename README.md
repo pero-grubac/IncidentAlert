@@ -13,7 +13,7 @@
 
 **Microservice backend for citizen incident reports: report on a map, moderate, publish, analyse.**
 
-<img src="readme_assets/demo.gif" alt="Incident Alert demo: a citizen reports a fallen tree with a photo, a moderator signs in and approves it, and the report appears on the public map" width="900">
+<img src="readme_assets/demo.gif" alt="Incident Alert demo: a citizen reports a fallen tree on the public map, a moderator opens it in the moderation queue and approves it, and the report appears on the public map" width="880">
 
 </div>
 
